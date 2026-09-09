@@ -1,4 +1,4 @@
-﻿const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 
 const TOKEN_KEY = 'cerebrus_token';
 const UID_KEY   = 'cerebrus_uid';
@@ -28,10 +28,8 @@ export function logout(): void {
   localStorage.removeItem(EMAIL_KEY);
 }
 
-// ─── Auth calls ─────────────────────────────────────────────────────────────
-
 export async function login(email: string, password: string): Promise<void> {
-  const res = await fetch(${API_BASE}/auth/login, {
+  const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -39,24 +37,23 @@ export async function login(email: string, password: string): Promise<void> {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail ?? Login failed ());
+    throw new Error(err.detail ?? `Login failed (${res.status})`);
   }
 
   const data: { access_token: string; token_type: string } = await res.json();
   localStorage.setItem(TOKEN_KEY, data.access_token);
 
-  // Decode uid + email from JWT payload (no library needed — just base64)
   try {
     const payload = JSON.parse(atob(data.access_token.split('.')[1]));
     if (payload.sub)   localStorage.setItem(UID_KEY,   payload.sub);
     if (payload.email) localStorage.setItem(EMAIL_KEY, payload.email);
   } catch {
-    // Non-critical — uid used only for session_id
+    // Non-critical
   }
 }
 
 export async function register(email: string, password: string): Promise<void> {
-  const res = await fetch(${API_BASE}/auth/register, {
+  const res = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -64,6 +61,7 @@ export async function register(email: string, password: string): Promise<void> {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail ?? Registration failed ());
+    throw new Error(err.detail ?? `Registration failed (${res.status})`);
   }
 }
+

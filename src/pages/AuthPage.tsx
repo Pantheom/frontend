@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from '../services/authService';
 
@@ -49,7 +49,11 @@ export function AuthPage() {
               <button
                 key={m}
                 onClick={() => { setMode(m); setError(null); }}
-                className={lex-1 py-2 text-xs font-medium uppercase tracking-widest transition-colors }
+                className={`flex-1 py-2 text-xs font-medium uppercase tracking-widest transition-colors ${
+                  mode === m
+                    ? 'bg-gold text-void'
+                    : 'text-mist hover:text-fog'
+                }`}
               >
                 {m === 'login' ? 'Sign In' : 'Register'}
               </button>
