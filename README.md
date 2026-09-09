@@ -1,4 +1,4 @@
-# Cerberus — Frontend Application
+# Cereberus — Frontend Application
 
 Frontend web application for **Cerberus** — an intelligent token-optimization decision layer and multi-tier LLM routing platform. Built with a restrained editorial dark void design system, interactive 3D pipeline visualization, and real-time observability.
 
