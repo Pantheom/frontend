@@ -29,7 +29,7 @@ export const LandingPage = () => {
       {/* Section 1: Hero — Full-Width Edge-to-Edge */}
       <section
         ref={sectionRef}
-        className="w-full pt-2 pb-12 sm:pt-4 sm:pb-16 lg:pt-6 lg:pb-20 border-b border-line/40"
+        className="w-full pt-2 pb-12 sm:pt-4 sm:pb-16 lg:pt-6 lg:pb-20"
       >
         <div className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
           <div className="w-full pt-4 sm:pt-6 lg:pt-10">
@@ -83,7 +83,7 @@ export const LandingPage = () => {
       <ClosingCtaSection />
 
       {/* Full-bleed Footer */}
-      <footer className="w-full border-t border-line py-10 bg-void">
+      <footer className="w-full py-10 bg-void">
         <div className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-mist">
           <span>CERBERUS • Intelligent Token Optimization</span>
           <div className="flex items-center gap-8">

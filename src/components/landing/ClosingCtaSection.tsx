@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export const ClosingCtaSection = () => {
   return (
-    <section className="w-full border-t border-line py-24 md:py-32">
+    <section className="w-full py-24 md:py-32">
       <div className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16 text-center">
         <div className="max-w-3xl mx-auto space-y-6">
           <h2 className="headline font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight text-fog">

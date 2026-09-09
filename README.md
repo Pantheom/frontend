@@ -12,7 +12,7 @@ The application consists of three primary surfaces:
 * **Interactive 3D Pipeline Hero**: Real-time [Spline](https://spline.design/) 3D scene representing the 4 core pipeline stages (*Query Ingestion*, *Semantic Cache*, *Context Classifier*, and *Model Router*).
 * **Editorial Dark Void Palette**: Strict aesthetic (`#0A0A0A` void, `#F5F4EF` fog, `#D4A854` gold accent) designed for technical clarity without gratuitous decorative noise.
 * **Architecture & Interactive Breakdown**:
-  * Step-by-step visual pipeline (`Semantic Cache` → `Model Router` → `Context Classifier`).
+  * Step-by-step visual pipeline (`Semantic Cache` → `Context Classifier` → `Model Router`).
   * Side-by-side Cache Hit vs. Router Miss comparison cards with `<CacheTag />` status indicators.
   * Hub-and-spoke service isolation explanation.
 

@@ -3,7 +3,7 @@ import { CheckCircle2, Zap } from 'lucide-react';
 
 export const ConcreteExampleSection = () => {
   return (
-    <section id="example" className="w-full border-t border-line py-20 md:py-28">
+    <section id="example" className="w-full py-20 md:py-28">
       <div className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16">
         <div className="mb-16">
           <span className="font-mono text-xs uppercase tracking-widest text-gold mb-3 block">

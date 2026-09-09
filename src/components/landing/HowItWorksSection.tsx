@@ -8,20 +8,20 @@ export const HowItWorksSection = () => {
     },
     {
       number: '02',
-      name: 'Model Router',
-      latency: '~20ms cascade',
-      description: 'Evaluates task complexity through chained gatekeepers to select the most cost-efficient model tier.',
-    },
-    {
-      number: '03',
       name: 'Context Classifier',
       latency: '~15ms eval',
       description: 'Determines whether conversational history is strictly required, preventing token bloat on self-contained queries.',
     },
+    {
+      number: '03',
+      name: 'Model Router',
+      latency: '~20ms cascade',
+      description: 'Evaluates task complexity through chained gatekeepers to select the most cost-efficient model tier.',
+    },
   ];
 
   return (
-    <section id="how-it-works" className="w-full border-t border-line py-20 md:py-28">
+    <section id="how-it-works" className="w-full py-20 md:py-28">
       <div className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16">
         <div className="mb-16">
           <span className="font-mono text-xs uppercase tracking-widest text-gold mb-3 block">

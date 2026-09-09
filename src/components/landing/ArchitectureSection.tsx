@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export const ArchitectureSection = () => {
   return (
-    <section id="architecture" className="w-full border-t border-line py-20 md:py-28">
+    <section id="architecture" className="w-full py-20 md:py-28">
       <div className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16">
         <div className="mb-16">
           <span className="font-mono text-xs uppercase tracking-widest text-gold mb-3 block">
@@ -36,22 +36,6 @@ export const ArchitectureSection = () => {
 
           {/* Service 2 */}
           <div className="p-8 rounded border border-line bg-surface/40 space-y-5">
-            <div className="w-10 h-10 rounded border border-line flex items-center justify-center text-gold">
-              <Cpu className="w-5 h-5" />
-            </div>
-            <h3 className="font-display text-xl text-fog">Model Cascade Router</h3>
-            <p className="text-sm text-mist leading-relaxed font-body">
-              Evaluates queries via dual RouteLLM controllers. 53% of queries resolve on Tier 1 (Llama-3.3-70b via Groq), 20% on Tier 2 (Gemini-2.5-Flash), and 27% escalate to Tier 3 (Gemini-3.5-Flash) with fail-safe escalation.
-            </p>
-            <div className="pt-3">
-              <span className="font-mono text-xs text-gold bg-gold-muted px-2.5 py-1 rounded">
-                Config-Driven • No DB Dependency
-              </span>
-            </div>
-          </div>
-
-          {/* Service 3 */}
-          <div className="p-8 rounded border border-line bg-surface/40 space-y-5">
             <div className="w-10 h-10 rounded border border-line flex items-center justify-center text-mist">
               <Layers className="w-5 h-5" />
             </div>
@@ -62,6 +46,22 @@ export const ArchitectureSection = () => {
             <div className="pt-3">
               <span className="font-mono text-xs text-mist bg-surface border border-line px-2.5 py-1 rounded">
                 Sliding-Window DB History
+              </span>
+            </div>
+          </div>
+
+          {/* Service 3 */}
+          <div className="p-8 rounded border border-line bg-surface/40 space-y-5">
+            <div className="w-10 h-10 rounded border border-line flex items-center justify-center text-gold">
+              <Cpu className="w-5 h-5" />
+            </div>
+            <h3 className="font-display text-xl text-fog">Model Cascade Router</h3>
+            <p className="text-sm text-mist leading-relaxed font-body">
+              Evaluates queries via dual RouteLLM controllers. 53% of queries resolve on Tier 1 (Llama-3.3-70b via Groq), 20% on Tier 2 (Gemini-2.5-Flash), and 27% escalate to Tier 3 (Gemini-3.5-Flash) with fail-safe escalation.
+            </p>
+            <div className="pt-3">
+              <span className="font-mono text-xs text-gold bg-gold-muted px-2.5 py-1 rounded">
+                Config-Driven • No DB Dependency
               </span>
             </div>
           </div>
