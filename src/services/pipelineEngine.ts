@@ -1,4 +1,5 @@
 import type { RouteTelemetry, ChatMessage } from '../types/telemetry';
+import { getToken } from './authService';
 
 // Realistic pre-seeded responses matching backend seed_cache (OpenHermes / Dolly 15K / ShareGPT)
 interface SeedCacheItem {
@@ -46,33 +47,49 @@ export async function executePipelineQuery(
   prompt: string,
   history: ChatMessage[],
   config: PipelineConfig = defaultPipelineConfig,
-  onTokenChunk?: (chunk: string) => void
+  onTokenChunk?: (chunk: string) => void,
+  session_id?: string,
 ): Promise<{ response: string; telemetry: RouteTelemetry }> {
   // If live backend is enabled and configured, dispatch real fetch
   if (config.useLiveBackend && config.apiUrl) {
     try {
       const startTime = performance.now();
-      const res = await fetch(`${config.apiUrl}/query`, {
+      const token = getToken();
+      const res = await fetch(`${config.apiUrl}/ai/query`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, session_id: 'cerberus_web_session' }),
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          prompt,
+          session_id: session_id ?? 'default',
+        }),
       });
 
       if (!res.ok) throw new Error(`Backend returned HTTP ${res.status}`);
       const data = await res.json();
       const latencyMs = Math.round(performance.now() - startTime);
 
+      // Map tier number to label
+      const tierLabel = (
+        data.routing?.tier === 2 ? 'Tier 2 — Medium'
+        : data.routing?.tier === 3 ? 'Tier 3 — Large'
+        : 'Tier 1 — Small'
+      ) as RouteTelemetry['tier'];
+
       return {
-        response: data.response || 'No response from backend',
+        response: data.response ?? 'No response from backend',
         telemetry: {
-          source: data.source || 'LLM_Generation_Miss',
-          tier: data.debug?.tier || 'Tier 1 — Small',
-          latencyMs,
+          source: (data.source as RouteTelemetry['source']) ?? 'LLM_Generation_Miss',
+          tier: tierLabel,
+          modelName: data.routing?.model,
+          latencyMs: data.latency_ms ?? latencyMs,
           similarityScore: data.debug?.similarity_score,
-          tokensSaved: data.debug?.cached ? 450 : 0,
-          tokensUsed: data.debug?.cached ? 0 : 450,
-          failSafeTriggered: data.debug?.fail_safe_triggered || false,
-          needsContext: data.debug?.needs_context || false,
+          tokensSaved: data.cache_hit ? 450 : 0,
+          tokensUsed: data.cache_hit ? 0 : 450,
+          failSafeTriggered: data.debug?.fail_safe_triggered ?? false,
+          needsContext: data.context?.needs_context ?? false,
         },
       };
     } catch (err) {

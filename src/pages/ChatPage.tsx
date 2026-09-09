@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NavRail from '../components/chat/NavRail';
 import ChatHeader from '../components/chat/ChatHeader';
 import ChatThread, { type ChatThreadMessage } from '../components/chat/ChatThread';
 import Composer from '../components/chat/Composer';
 import { executePipelineQuery } from '../services/pipelineEngine';
+import { isAuthenticated, getUid } from '../services/authService';
 import type { ChatMessage } from '../types/telemetry';
 
 export function ChatPage() {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatThreadMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [streamingMessage, setStreamingMessage] = useState<{
@@ -20,6 +23,14 @@ export function ChatPage() {
   const [tokensSavedTotal, setTokensSavedTotal] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [chatTitle, setChatTitle] = useState('New conversation');
+
+  // Auth guard — redirect to /login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated()) navigate('/login');
+  }, [navigate]);
+
+  // Fixed session per user — use uid stored at login time
+  const sessionId = getUid() ?? 'default';
 
   // Calculate hit rate percentage: hits ÷ total messages so far
   const hitRate = totalQueries > 0 ? Math.round((hitCount / totalQueries) * 100) : 0;
@@ -54,7 +65,10 @@ export function ChatPage() {
       const result = await executePipelineQuery(
         content,
         pipelineHistory,
-        undefined,
+        {
+          useLiveBackend: true,
+          apiUrl: import.meta.env.VITE_API_BASE_URL ?? '',
+        },
         (chunk) => {
           setStreamingMessage({
             text: chunk,
@@ -62,7 +76,8 @@ export function ChatPage() {
             tokensUsed: Math.round(chunk.split(' ').length * 1.3),
             tokensSaved: 0,
           });
-        }
+        },
+        sessionId,
       );
 
       const isHit = result.telemetry.source === 'RAM_Exact_Hit' || result.telemetry.source === 'DB_Semantic_Hit';
