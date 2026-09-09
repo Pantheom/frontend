@@ -4,7 +4,7 @@ Frontend web application for **Cerberus** — an intelligent token-optimization 
 
 ---
 
-## 🖥️ Core Frontend Surfaces
+##  Core Frontend Surfaces
 
 The application consists of three primary surfaces:
 
@@ -40,7 +40,7 @@ The application consists of three primary surfaces:
 
 ---
 
-## 🎨 Design Tokens
+## Design Tokens
 
 | Token | Class | Hex Value | Purpose |
 |---|---|---|---|
@@ -53,7 +53,7 @@ The application consists of three primary surfaces:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 src/
@@ -78,7 +78,7 @@ src/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 * **Node.js**: `18.x` or higher
