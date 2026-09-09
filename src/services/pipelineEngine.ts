@@ -203,7 +203,7 @@ Deep architectural synthesis: G1 and G2 controllers escalated this request due t
       provider,
       latencyMs: tier === 'Tier 1 — Small' ? 380 : tier === 'Tier 2 — Medium' ? 680 : 1240,
       tokensUsed: Math.round(words.length * 1.3),
-      tokensSaved: tier === 'Tier 1 — Small' ? 350 : tier === 'Tier 2 — Medium' ? 210 : 0,
+      tokensSaved: 0,
       costSavedUsd: tier === 'Tier 1 — Small' ? 0.0032 : 0.0015,
       failSafeTriggered: failSafe,
       needsContext,

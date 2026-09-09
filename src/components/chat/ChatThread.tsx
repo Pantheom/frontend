@@ -7,12 +7,14 @@ export interface ChatThreadMessage {
   role: 'user' | 'assistant';
   text: string;
   source?: string;
+  tokensUsed?: number;
+  tokensSaved?: number;
 }
 
 interface ChatThreadProps {
   messages?: ChatThreadMessage[];
   onSelectPrompt?: (prompt: string) => void;
-  streamingMessage?: { text: string; source?: string } | null;
+  streamingMessage?: { text: string; source?: string; tokensUsed?: number; tokensSaved?: number } | null;
 }
 
 export default function ChatThread({
@@ -36,7 +38,13 @@ export default function ChatThread({
         m.role === 'user' ? (
           <UserMessage key={m.id || i} text={m.text} />
         ) : (
-          <AssistantMessage key={m.id || i} text={m.text} source={m.source} />
+          <AssistantMessage
+            key={m.id || i}
+            text={m.text}
+            source={m.source}
+            tokensUsed={m.tokensUsed}
+            tokensSaved={m.tokensSaved}
+          />
         )
       )}
 
@@ -45,6 +53,8 @@ export default function ChatThread({
         <AssistantMessage
           text={streamingMessage.text || 'Processing query through cache & cascade router...'}
           source={streamingMessage.source || 'LLM_Generation_Miss'}
+          tokensUsed={streamingMessage.tokensUsed}
+          tokensSaved={streamingMessage.tokensSaved}
           isStreaming={true}
         />
       )}
