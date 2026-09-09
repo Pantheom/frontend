@@ -32,9 +32,9 @@ export const HowItWorksSection = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-line divide-y md:divide-y-0 md:divide-x divide-line">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-line divide-y md:divide-y-0 md:divide-x divide-line rounded-lg overflow-hidden bg-gradient-to-b from-surface-elevated via-surface/40 to-void/60">
           {stages.map((stage) => (
-            <div key={stage.name} className="p-8 md:p-12 space-y-6 flex flex-col justify-between bg-surface/30">
+            <div key={stage.name} className="p-8 md:p-12 space-y-6 flex flex-col justify-between bg-gradient-to-b from-white/[0.04] via-transparent to-transparent hover:bg-white/[0.02] transition-colors duration-300">
               <div className="space-y-4">
                 <div className="flex items-center justify-between font-mono text-xs text-mist">
                   <span>{stage.number}</span>

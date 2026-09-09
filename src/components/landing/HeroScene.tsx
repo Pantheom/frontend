@@ -5,31 +5,55 @@ import type { Application } from '@splinetool/runtime';
 interface HeroSceneProps {
   isVisible?: boolean;
 }
-
 export default function HeroScene({ isVisible = true }: HeroSceneProps) {
   const splineAppRef = useRef<Application | null>(null);
+  const loopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleLoad = (app: Application) => {
-    splineAppRef.current = app;
-    if (!isVisible) {
-      app.stop();
+  const resetScene = (app: Application | null) => {
+    if (!app) return;
+    try {
+      const eventMgr = (app as any)._eventManager || (app as any).eventManager;
+      if (typeof eventMgr?.reset === 'function') {
+        eventMgr.reset();
+      }
+    } catch {
+      // Ignore any internal reset errors gracefully
     }
   };
 
-  useEffect(() => {
-    const app = splineAppRef.current;
-    if (!app) return;
-
-    if (isVisible) {
-      if (app.isStopped) {
-        app.play();
-      }
-    } else {
-      if (!app.isStopped) {
-        app.stop();
-      }
+  const startAnimationLoop = () => {
+    if (loopTimerRef.current) {
+      clearTimeout(loopTimerRef.current);
+      loopTimerRef.current = null;
     }
-  }, [isVisible]);
+
+    // ~3.5s animation playback + 6.0s pause between loops = 9.5s total cycle
+    const ANIMATION_DURATION_MS = 3500;
+    const PAUSE_BETWEEN_LOOPS_MS = 6000;
+    const TOTAL_LOOP_CYCLE_MS = ANIMATION_DURATION_MS + PAUSE_BETWEEN_LOOPS_MS;
+
+    loopTimerRef.current = setTimeout(() => {
+      const app = splineAppRef.current;
+      if (app && isVisible) {
+        resetScene(app);
+        startAnimationLoop();
+      }
+    }, TOTAL_LOOP_CYCLE_MS);
+  };
+
+  const handleLoad = (app: Application) => {
+    splineAppRef.current = app;
+    startAnimationLoop();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (loopTimerRef.current) {
+        clearTimeout(loopTimerRef.current);
+        loopTimerRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <Spline

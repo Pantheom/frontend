@@ -19,7 +19,7 @@ export const ArchitectureSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {/* Service 1 */}
-          <div className="p-8 rounded border border-line bg-surface/40 space-y-5">
+          <div className="p-8 rounded-lg border border-line bg-gradient-to-b from-surface-elevated via-surface/40 to-void/60 space-y-5">
             <div className="w-10 h-10 rounded border border-line flex items-center justify-center text-cache-hit">
               <Database className="w-5 h-5" />
             </div>
@@ -35,7 +35,7 @@ export const ArchitectureSection = () => {
           </div>
 
           {/* Service 2 */}
-          <div className="p-8 rounded border border-line bg-surface/40 space-y-5">
+          <div className="p-8 rounded-lg border border-line bg-gradient-to-b from-surface-elevated via-surface/40 to-void/60 space-y-5">
             <div className="w-10 h-10 rounded border border-line flex items-center justify-center text-mist">
               <Layers className="w-5 h-5" />
             </div>
@@ -51,7 +51,7 @@ export const ArchitectureSection = () => {
           </div>
 
           {/* Service 3 */}
-          <div className="p-8 rounded border border-line bg-surface/40 space-y-5">
+          <div className="p-8 rounded-lg border border-line bg-gradient-to-b from-surface-elevated via-surface/40 to-void/60 space-y-5">
             <div className="w-10 h-10 rounded border border-line flex items-center justify-center text-gold">
               <Cpu className="w-5 h-5" />
             </div>
@@ -68,7 +68,7 @@ export const ArchitectureSection = () => {
         </div>
 
         {/* Central Hub Bar */}
-        <div className="mt-8 p-8 rounded border border-line bg-surface flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-8 p-8 rounded-lg border border-line bg-gradient-to-r from-surface-elevated via-surface/60 to-surface-elevated flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <ShieldCheck className="w-6 h-6 text-gold shrink-0" />
             <div>

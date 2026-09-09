@@ -19,7 +19,7 @@ export const ConcreteExampleSection = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
           {/* Card A: Cache Hit */}
-          <div className="p-8 md:p-10 rounded border border-line bg-surface flex flex-col justify-between space-y-6">
+          <div className="p-8 md:p-10 rounded-lg border border-line bg-gradient-to-b from-surface-elevated/90 via-surface to-surface/90 flex flex-col justify-between space-y-6">
             <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs text-mist uppercase">Common Query • Semantic Match</span>
@@ -48,7 +48,7 @@ export const ConcreteExampleSection = () => {
           </div>
 
           {/* Card B: Cache Miss with Model Router */}
-          <div className="p-8 md:p-10 rounded border border-line bg-surface flex flex-col justify-between space-y-6">
+          <div className="p-8 md:p-10 rounded-lg border border-line bg-gradient-to-b from-surface-elevated/90 via-surface to-surface/90 flex flex-col justify-between space-y-6">
             <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs text-mist uppercase">Novel Task • Cascade Escalation</span>
