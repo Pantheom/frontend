@@ -4,7 +4,7 @@ Frontend web application for **Cerberus** — an intelligent token-optimization 
 
 ---
 
-##  Core Frontend Surfaces
+## Core Frontend Surfaces
 
 The application consists of three primary surfaces:
 
@@ -29,7 +29,7 @@ The application consists of three primary surfaces:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Framework**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 * **Bundler & Dev Server**: [Vite 7](https://vite.dev/)

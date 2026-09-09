@@ -1,12 +1,18 @@
 import { Link } from 'react-router-dom';
+import logoImg from '../../assets/logo.png';
 
 export const LandingNav = () => {
   return (
     <header className="w-full border-b border-line/60 bg-void/90 sticky top-0 z-40 backdrop-blur-none">
-      <nav className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16 flex justify-between items-center py-5">
-        <Link to="/" className="flex items-center gap-2 group shrink-0">
-          <span className="font-display text-lg tracking-wider text-fog group-hover:text-gold transition-colors font-semibold">
-            CERBERUS
+      <nav className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16 flex justify-between items-center py-4 sm:py-5">
+        <Link to="/" className="flex items-center group shrink-0">
+          <img
+            src={logoImg}
+            alt="Cerberus Logo"
+            className="h-[28px] sm:h-[30px] w-auto object-contain shrink-0"
+          />
+          <span className="font-display text-lg tracking-wider text-fog group-hover:text-gold transition-colors font-semibold ml-0.5 sm:ml-1 translate-y-[3px]">
+            ERBERUS
           </span>
         </Link>
 

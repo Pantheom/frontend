@@ -57,22 +57,15 @@ export const LandingPage = () => {
 
           {/* Spline 3D Scene Container */}
           <div className="h-[480px] sm:h-[540px] lg:h-[620px] w-full max-w-[640px] lg:max-w-none mx-auto relative flex items-center justify-center bg-void -mt-4 sm:-mt-8 lg:-mt-12">
-            {inView ? (
-              <Suspense
-                fallback={
-                  <div className="w-full h-full bg-void border border-line rounded-lg flex items-center justify-center font-mono text-xs text-mist">
-                    Initializing 3D viewport...
-                  </div>
-                }
-              >
-                <HeroScene />
-              </Suspense>
-            ) : (
-              <div
-                className="w-full h-full bg-void border border-line rounded-lg"
-                aria-hidden="true"
-              />
-            )}
+            <Suspense
+              fallback={
+                <div className="w-full h-full bg-void border border-line rounded-lg flex items-center justify-center font-mono text-xs text-mist">
+                  Initializing 3D viewport...
+                </div>
+              }
+            >
+              <HeroScene isVisible={inView} />
+            </Suspense>
           </div>
         </div>
       </section>

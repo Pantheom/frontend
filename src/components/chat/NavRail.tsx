@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Plus, Clock, BarChart2, ArrowLeft, Shield } from 'lucide-react';
+import { Plus, Clock, BarChart2, ArrowLeft } from 'lucide-react';
+import logoImg from '../../assets/logo.png';
 
 interface NavRailProps {
   onNewChat?: () => void;
@@ -17,11 +18,11 @@ export default function NavRail({
       <div className="flex flex-col gap-2">
         <Link
           to="/"
-          className="font-display text-base mb-6 font-semibold tracking-wider text-fog hover:text-gold transition-colors flex items-center gap-2"
+          className="font-display text-base mb-6 font-semibold tracking-wider text-fog hover:text-gold transition-colors flex items-center"
           title="Return to Landing Page"
         >
-          <Shield className="w-4 h-4 text-gold" />
-          <span>CERBERUS</span>
+          <img src={logoImg} alt="Cerberus Logo" className="h-[22px] w-auto object-contain shrink-0" />
+          <span className="ml-0.5 translate-y-[2px]">ERBERUS</span>
         </Link>
 
         <button

@@ -23,7 +23,7 @@ export const ArchitectureSection = () => {
             <div className="w-10 h-10 rounded border border-line flex items-center justify-center text-cache-hit">
               <Database className="w-5 h-5" />
             </div>
-            <h3 className="font-display text-xl text-fog">AXIOM Semantic Cache</h3>
+            <h3 className="font-display text-xl text-fog">Cerberus Semantic Cache</h3>
             <p className="text-sm text-mist leading-relaxed font-body">
               Two-tier storage with in-memory LRU RAM (&lt;1ms) and Supabase pgvector cosine similarity (&gt;0.85 threshold). Includes an internal zero-shot DeBERTa gatekeeper to keep personal data out of shared vector tables.
             </p>
