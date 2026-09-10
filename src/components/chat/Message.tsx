@@ -1,3 +1,6 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 interface UserMessageProps {
   text: string;
 }
@@ -62,12 +65,12 @@ export function AssistantMessage({
           {isHit ? `saved ~${tokensSaved ?? 0} tokens` : `${tokensUsed ?? 0} tokens`}
         </span>
       </div>
-      <p className="text-sm leading-relaxed text-ink dark:text-ink-dark text-fog whitespace-pre-wrap">
-        {text}
+      <div className="assistant-markdown text-sm leading-relaxed text-ink dark:text-ink-dark text-fog">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
         {isStreaming && (
           <span className="inline-block w-1.5 h-3.5 ml-1 bg-gold animate-pulse align-middle" />
         )}
-      </p>
+      </div>
     </div>
   );
 }

@@ -25,6 +25,113 @@
   text-transform: uppercase;
 }
 
+.assistant-markdown > :first-child {
+  margin-top: 0;
+}
+
+.assistant-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.assistant-markdown p,
+.assistant-markdown ul,
+.assistant-markdown ol,
+.assistant-markdown blockquote,
+.assistant-markdown pre,
+.assistant-markdown table {
+  margin: 0.75rem 0;
+}
+
+.assistant-markdown h1,
+.assistant-markdown h2,
+.assistant-markdown h3,
+.assistant-markdown h4 {
+  color: #f5f4ef;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 1rem 0 0.5rem;
+}
+
+.assistant-markdown h1 { font-size: 1.25rem; }
+.assistant-markdown h2 { font-size: 1.1rem; }
+.assistant-markdown h3,
+.assistant-markdown h4 { font-size: 1rem; }
+
+.assistant-markdown ul,
+.assistant-markdown ol {
+  padding-left: 1.25rem;
+}
+
+.assistant-markdown ul { list-style: disc; }
+.assistant-markdown ol { list-style: decimal; }
+
+.assistant-markdown li + li {
+  margin-top: 0.35rem;
+}
+
+.assistant-markdown strong {
+  color: #f5f4ef;
+  font-weight: 650;
+}
+
+.assistant-markdown a {
+  color: #d4a85f;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.assistant-markdown code {
+  border: 1px solid rgba(245, 244, 239, 0.12);
+  border-radius: 0.25rem;
+  background: rgba(245, 244, 239, 0.08);
+  padding: 0.1rem 0.3rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+}
+
+.assistant-markdown pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(245, 244, 239, 0.12);
+  border-radius: 0.4rem;
+  background: #111;
+  padding: 0.85rem;
+}
+
+.assistant-markdown pre code {
+  display: block;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  white-space: pre;
+}
+
+.assistant-markdown blockquote {
+  border-left: 2px solid #d4a85f;
+  color: #aaa79f;
+  padding-left: 0.8rem;
+}
+
+.assistant-markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.assistant-markdown th,
+.assistant-markdown td {
+  border: 1px solid rgba(245, 244, 239, 0.15);
+  padding: 0.45rem 0.65rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.assistant-markdown th {
+  color: #f5f4ef;
+  background: rgba(245, 244, 239, 0.06);
+}
+
 /* Custom restrained dark scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
