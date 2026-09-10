@@ -7,6 +7,9 @@ export interface ChatThreadMessage {
   role: 'user' | 'assistant';
   text: string;
   source?: string;
+  tier?: string;
+  modelName?: string;
+  needsContext?: boolean;
   tokensUsed?: number;
   tokensSaved?: number;
 }
@@ -42,6 +45,9 @@ export default function ChatThread({
             key={m.id || i}
             text={m.text}
             source={m.source}
+            selectedTier={m.tier}
+            modelName={m.modelName}
+            needsContext={m.needsContext}
             tokensUsed={m.tokensUsed}
             tokensSaved={m.tokensSaved}
           />

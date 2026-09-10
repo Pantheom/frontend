@@ -35,11 +35,24 @@ const TIER_LABEL: Record<string, TierConfig> = {
     color: 'cache-miss',
     badgeClass: 'bg-cache-miss/15 text-cache-miss',
   },
+  Cache_Miss: {
+    label: 'LLM call',
+    color: 'cache-miss',
+    badgeClass: 'bg-cache-miss/15 text-cache-miss',
+  },
+  Cache_Unavailable: {
+    label: 'LLM call',
+    color: 'cache-miss',
+    badgeClass: 'bg-cache-miss/15 text-cache-miss',
+  },
 };
 
 interface AssistantMessageProps {
   text: string;
   source?: string;
+  selectedTier?: string;
+  modelName?: string;
+  needsContext?: boolean;
   tokensUsed?: number;
   tokensSaved?: number;
   isStreaming?: boolean;
@@ -48,12 +61,16 @@ interface AssistantMessageProps {
 export function AssistantMessage({
   text,
   source,
+  selectedTier,
+  modelName,
+  needsContext,
   tokensUsed,
   tokensSaved,
   isStreaming,
 }: AssistantMessageProps) {
   const tier = (source && source in TIER_LABEL ? TIER_LABEL[source] : undefined) ?? TIER_LABEL.LLM_Generation_Miss;
-  const isHit = source !== 'LLM_Generation_Miss';
+  const isHit = source === 'RAM_Exact_Hit' || source === 'DB_Semantic_Hit';
+  const isLlmCall = !isHit;
 
   return (
     <div className="max-w-[75%]">
@@ -61,10 +78,23 @@ export function AssistantMessage({
         <span className={`text-xs px-2 py-0.5 rounded font-mono ${tier.badgeClass}`}>
           {tier.label}
         </span>
+        <span className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
+          {isLlmCall ? (selectedTier ?? 'Tier pending') : 'No LLM call'}
+        </span>
+        <span className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
+          {isLlmCall
+            ? needsContext === undefined ? 'Context pending' : needsContext ? 'Context used' : 'No context'
+            : 'Context not evaluated'}
+        </span>
         <span className="text-xs text-muted dark:text-muted-dark text-mist font-mono">
           {isHit ? `saved ~${tokensSaved ?? 0} tokens` : `${tokensUsed ?? 0} tokens`}
         </span>
       </div>
+      {isLlmCall && modelName && (
+        <div className="mb-2 text-[11px] font-mono text-mist">
+          {modelName}
+        </div>
+      )}
       <div className="assistant-markdown text-sm leading-relaxed text-ink dark:text-ink-dark text-fog">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
         {isStreaming && (

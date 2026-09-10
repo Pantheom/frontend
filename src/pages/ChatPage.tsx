@@ -89,6 +89,9 @@ export function ChatPage() {
         role: 'assistant',
         text: result.response,
         source: result.telemetry.source,
+        tier: result.telemetry.tier,
+        modelName: result.telemetry.modelName,
+        needsContext: result.telemetry.needsContext,
         tokensUsed,
         tokensSaved,
       };
