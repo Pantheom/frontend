@@ -1,4 +1,4 @@
-import type { RouteTelemetry, ChatMessage } from '../types/telemetry';
+﻿import type { RouteTelemetry, ChatMessage } from '../types/telemetry';
 import { getToken } from './authService';
 
 // Realistic pre-seeded responses matching backend seed_cache (OpenHermes / Dolly 15K / ShareGPT)
@@ -137,7 +137,6 @@ export async function executePipelineQuery(
         source: 'RAM_Exact_Hit',
         provider: 'In-Memory',
         latencyMs: 1,
-        tokensUsed: 0,
         costSavedUsd: 0.0038,
       },
     };
@@ -159,7 +158,6 @@ export async function executePipelineQuery(
         provider: 'Supabase pgvector',
         similarityScore: semanticHit.similarity,
         latencyMs: 85,
-        tokensUsed: 0,
         costSavedUsd: 0.0042,
       },
     };
@@ -242,7 +240,13 @@ Deep architectural synthesis: G1 and G2 controllers escalated this request due t
       modelName,
       provider,
       latencyMs: tier === 'Tier 1 — Small' ? 380 : tier === 'Tier 2 — Medium' ? 680 : 1240,
-      tokensUsed: Math.round(words.length * 1.3),
+      tokenUsage: {
+        prompt_tokens: Math.round(words.length * 0.8),
+        completion_tokens: Math.round(words.length * 0.5),
+        total_tokens: Math.round(words.length * 1.3),
+        provider: provider as 'Groq' | 'Google',
+        model: modelName,
+      },
       costSavedUsd: tier === 'Tier 1 — Small' ? 0.0032 : 0.0015,
       failSafeTriggered: failSafe,
       needsContext,

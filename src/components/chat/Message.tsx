@@ -83,19 +83,19 @@ export function AssistantMessage({
           {isLlmCall ? (selectedTier ?? 'Tier pending') : 'No LLM call'}
         </span>
         <span className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
-          {'Context needed: '}{isLlmCall && needsContext === true ? 'true' : 'false'}
+          Context needed: {isLlmCall && needsContext === true ? 'true' : 'false'}
         </span>
         {isLlmCall && tokenUsage && tokenUsage.total_tokens !== null && (
           <span
             className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist"
             title={`Provider: ${tokenUsage.provider ?? '-'} - Model: ${tokenUsage.model ?? '-'}`}
           >
-            {'in:'} {tokenUsage.prompt_tokens ?? '?'} {'out:'} {tokenUsage.completion_tokens ?? '?'} {'total:'} {tokenUsage.total_tokens} {'tok'}
+            {'↑'} {tokenUsage.prompt_tokens ?? '?'} {'↓'} {tokenUsage.completion_tokens ?? '?'} {'|'} {tokenUsage.total_tokens} tok
           </span>
         )}
         {latencyMs !== undefined && (
           <span className="text-xs text-muted dark:text-muted-dark text-mist font-mono">
-            {'Response: '}{latencyMs} {'ms'}
+            Response: {latencyMs} ms
           </span>
         )}
       </div>

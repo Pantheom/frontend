@@ -1,6 +1,12 @@
-export type CacheSource = 'RAM_Exact_Hit' | 'DB_Semantic_Hit' | 'LLM_Generation_Miss';
+﻿export type CacheSource = 'RAM_Exact_Hit' | 'DB_Semantic_Hit' | 'LLM_Generation_Miss';
 
-export type ModelTier = 'Tier 1 — Small' | 'Tier 2 — Medium' | 'Tier 3 — Large';
+export type ModelTier =
+  | 'Tier 1 — Small'
+  | 'Tier 2 — Medium'
+  | 'Tier 3 — Large'
+  | 'Tier 1 - Small'
+  | 'Tier 2 - Medium'
+  | 'Tier 3 - Large';
 
 export interface TokenUsage {
   prompt_tokens: number | null;
