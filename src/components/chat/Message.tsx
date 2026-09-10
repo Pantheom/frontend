@@ -54,7 +54,6 @@ interface AssistantMessageProps {
   modelName?: string;
   needsContext?: boolean;
   tokensUsed?: number;
-  tokensSaved?: number;
   isStreaming?: boolean;
 }
 
@@ -65,7 +64,6 @@ export function AssistantMessage({
   modelName,
   needsContext,
   tokensUsed,
-  tokensSaved,
   isStreaming,
 }: AssistantMessageProps) {
   const tier = (source && source in TIER_LABEL ? TIER_LABEL[source] : undefined) ?? TIER_LABEL.LLM_Generation_Miss;
@@ -87,7 +85,7 @@ export function AssistantMessage({
             : 'Context not evaluated'}
         </span>
         <span className="text-xs text-muted dark:text-muted-dark text-mist font-mono">
-          {isHit ? `saved ~${tokensSaved ?? 0} tokens` : `${tokensUsed ?? 0} tokens`}
+          {isHit ? 'Cached response' : `${tokensUsed ?? 0} tokens used`}
         </span>
       </div>
       {isLlmCall && modelName && (

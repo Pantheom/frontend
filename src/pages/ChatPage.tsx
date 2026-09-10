@@ -16,11 +16,9 @@ export function ChatPage() {
     text: string;
     source?: string;
     tokensUsed?: number;
-    tokensSaved?: number;
   } | null>(null);
   const [hitCount, setHitCount] = useState(0);
   const [totalQueries, setTotalQueries] = useState(0);
-  const [tokensSavedTotal, setTokensSavedTotal] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [chatTitle, setChatTitle] = useState('New conversation');
 
@@ -51,7 +49,7 @@ export function ChatPage() {
 
     setMessages((prev) => [...prev, userMessage]);
     setIsProcessing(true);
-    setStreamingMessage({ text: '', source: 'LLM_Generation_Miss', tokensUsed: 0, tokensSaved: 0 });
+    setStreamingMessage({ text: '', source: 'LLM_Generation_Miss', tokensUsed: 0 });
 
     // Map existing thread messages for pipeline history context
     const pipelineHistory: ChatMessage[] = messages.map((m) => ({
@@ -74,14 +72,12 @@ export function ChatPage() {
             text: chunk,
             source: 'LLM_Generation_Miss',
             tokensUsed: Math.round(chunk.split(' ').length * 1.3),
-            tokensSaved: 0,
           });
         },
         sessionId,
       );
 
       const isHit = result.telemetry.source === 'RAM_Exact_Hit' || result.telemetry.source === 'DB_Semantic_Hit';
-      const tokensSaved = isHit ? (result.telemetry.tokensSaved ?? 0) : 0;
       const tokensUsed = result.telemetry.tokensUsed ?? 0;
 
       const assistantMessage: ChatThreadMessage = {
@@ -93,7 +89,6 @@ export function ChatPage() {
         modelName: result.telemetry.modelName,
         needsContext: result.telemetry.needsContext,
         tokensUsed,
-        tokensSaved,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -102,7 +97,6 @@ export function ChatPage() {
       setTotalQueries((prev) => prev + 1);
       if (isHit) {
         setHitCount((prev) => prev + 1);
-        setTokensSavedTotal((prev) => prev + tokensSaved);
       }
     } catch (err) {
       console.error('Pipeline execution error:', err);
@@ -112,7 +106,6 @@ export function ChatPage() {
         text: 'Cerberus encountered an error communicating with the model cascade router.',
         source: 'LLM_Generation_Miss',
         tokensUsed: 0,
-        tokensSaved: 0,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -129,7 +122,6 @@ export function ChatPage() {
     setHistoryOpen(false);
     setHitCount(0);
     setTotalQueries(0);
-    setTokensSavedTotal(0);
   };
 
   const handleToggleHistory = () => {
@@ -148,7 +140,7 @@ export function ChatPage() {
       {/* Main Conversation Pane */}
       <div className="flex-1 flex flex-col min-w-0 bg-void relative">
         {/* Header with live earned cache stat */}
-        <ChatHeader title={chatTitle} hitRate={hitRate} tokensSavedTotal={tokensSavedTotal} />
+        <ChatHeader title={chatTitle} hitRate={hitRate} />
 
         {/* Conversation Thread */}
         <ChatThread

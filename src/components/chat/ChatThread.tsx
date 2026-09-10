@@ -11,13 +11,12 @@ export interface ChatThreadMessage {
   modelName?: string;
   needsContext?: boolean;
   tokensUsed?: number;
-  tokensSaved?: number;
 }
 
 interface ChatThreadProps {
   messages?: ChatThreadMessage[];
   onSelectPrompt?: (prompt: string) => void;
-  streamingMessage?: { text: string; source?: string; tokensUsed?: number; tokensSaved?: number } | null;
+  streamingMessage?: { text: string; source?: string; tokensUsed?: number } | null;
 }
 
 export default function ChatThread({
@@ -49,7 +48,6 @@ export default function ChatThread({
             modelName={m.modelName}
             needsContext={m.needsContext}
             tokensUsed={m.tokensUsed}
-            tokensSaved={m.tokensSaved}
           />
         )
       )}
@@ -60,7 +58,6 @@ export default function ChatThread({
           text={streamingMessage.text || 'Processing query through cache & cascade router...'}
           source={streamingMessage.source || 'LLM_Generation_Miss'}
           tokensUsed={streamingMessage.tokensUsed}
-          tokensSaved={streamingMessage.tokensSaved}
           isStreaming={true}
         />
       )}

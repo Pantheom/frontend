@@ -9,7 +9,6 @@ export interface RouteTelemetry {
   provider?: 'Groq' | 'Google' | 'In-Memory' | 'Supabase pgvector';
   similarityScore?: number;
   latencyMs: number;
-  tokensSaved?: number;
   tokensUsed?: number;
   costSavedUsd?: number;
   failSafeTriggered?: boolean;

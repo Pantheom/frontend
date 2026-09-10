@@ -4,7 +4,6 @@ import { CacheTag } from '../components/ui/CacheTag';
 import {
   ArrowLeft,
   Zap,
-  TrendingUp,
   DollarSign,
   Clock,
   Cpu,
@@ -26,7 +25,6 @@ interface RequestAuditLog {
   model: string;
   provider: string;
   latencyMs: number;
-  tokensSaved: number;
   tokensBilled: number;
   costSavedUsd: number;
   g1Score?: number;
@@ -44,7 +42,6 @@ const SAMPLE_LOGS: RequestAuditLog[] = [
     model: 'all-mpnet-base-v2 (768-dim)',
     provider: 'Supabase pgvector',
     latencyMs: 74,
-    tokensSaved: 420,
     tokensBilled: 0,
     costSavedUsd: 0.0042,
     needsContext: false,
@@ -58,7 +55,6 @@ const SAMPLE_LOGS: RequestAuditLog[] = [
     model: 'LRU In-Memory Dict',
     provider: 'In-Memory',
     latencyMs: 0.8,
-    tokensSaved: 380,
     tokensBilled: 0,
     costSavedUsd: 0.0038,
     needsContext: false,
@@ -73,7 +69,6 @@ const SAMPLE_LOGS: RequestAuditLog[] = [
     model: 'llama-3.3-70b-versatile',
     provider: 'Groq',
     latencyMs: 390,
-    tokensSaved: 340,
     tokensBilled: 210,
     costSavedUsd: 0.0031,
     g1Score: 0.28,
@@ -89,7 +84,6 @@ const SAMPLE_LOGS: RequestAuditLog[] = [
     model: 'gemini-2.5-flash',
     provider: 'Google',
     latencyMs: 640,
-    tokensSaved: 190,
     tokensBilled: 380,
     costSavedUsd: 0.0018,
     g1Score: 0.64,
@@ -106,7 +100,6 @@ const SAMPLE_LOGS: RequestAuditLog[] = [
     model: 'gemini-3.5-flash',
     provider: 'Google',
     latencyMs: 1280,
-    tokensSaved: 0,
     tokensBilled: 740,
     costSavedUsd: 0.0,
     g1Score: 0.84,
@@ -123,7 +116,6 @@ const SAMPLE_LOGS: RequestAuditLog[] = [
     model: 'gemini-3.5-flash',
     provider: 'Google',
     latencyMs: 1350,
-    tokensSaved: 0,
     tokensBilled: 860,
     costSavedUsd: 0.0,
     g1Score: 0.81,
@@ -211,22 +203,7 @@ export const DashboardPage = () => {
             </p>
           </div>
 
-          {/* KPI 2: Total Tokens Saved */}
-          <div className="p-6 rounded-lg border border-line bg-surface/50 space-y-3">
-            <div className="flex items-center justify-between text-mist">
-              <span className="text-xs font-mono uppercase">Tokens Saved</span>
-              <TrendingUp className="w-4 h-4 text-gold" />
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-display text-3xl text-fog font-semibold">142,850</span>
-              <span className="font-mono text-xs text-gold">tokens</span>
-            </div>
-            <p className="text-xs text-mist font-body">
-              Tokens bypassed entirely through caching and small-tier cascade
-            </p>
-          </div>
-
-          {/* KPI 3: Dollar Cost Reduction */}
+          {/* KPI 2: Dollar Cost Reduction */}
           <div className="p-6 rounded-lg border border-line bg-surface/50 space-y-3">
             <div className="flex items-center justify-between text-mist">
               <span className="text-xs font-mono uppercase">Cost Reduction</span>
@@ -241,7 +218,7 @@ export const DashboardPage = () => {
             </p>
           </div>
 
-          {/* KPI 4: Mean Latency */}
+          {/* KPI 3: Mean Latency */}
           <div className="p-6 rounded-lg border border-line bg-surface/50 space-y-3">
             <div className="flex items-center justify-between text-mist">
               <span className="text-xs font-mono uppercase">Avg Turn Latency</span>
@@ -394,7 +371,6 @@ export const DashboardPage = () => {
                     <th className="p-3">Prompt</th>
                     <th className="p-3">Source</th>
                     <th className="p-3">Latency</th>
-                    <th className="p-3">Tokens</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line-light">
@@ -414,7 +390,6 @@ export const DashboardPage = () => {
                           <CacheTag source={log.source} compact />
                         </td>
                         <td className="p-3 text-mist whitespace-nowrap">{log.latencyMs}ms</td>
-                        <td className="p-3 text-cache-hit whitespace-nowrap">+{log.tokensSaved}</td>
                       </tr>
                     );
                   })}
@@ -467,7 +442,6 @@ export const DashboardPage = () => {
                           source: selectedLog.source,
                           tier: selectedLog.tier,
                           latency_ms: selectedLog.latencyMs,
-                          tokens_saved: selectedLog.tokensSaved,
                           g1_score: selectedLog.g1Score,
                           g2_score: selectedLog.g2Score,
                           needs_context: selectedLog.needsContext,
