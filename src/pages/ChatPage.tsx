@@ -15,7 +15,6 @@ export function ChatPage() {
   const [streamingMessage, setStreamingMessage] = useState<{
     text: string;
     source?: string;
-    tokensUsed?: number;
   } | null>(null);
   const [hitCount, setHitCount] = useState(0);
   const [totalQueries, setTotalQueries] = useState(0);
@@ -49,7 +48,7 @@ export function ChatPage() {
 
     setMessages((prev) => [...prev, userMessage]);
     setIsProcessing(true);
-    setStreamingMessage({ text: '', source: 'LLM_Generation_Miss', tokensUsed: 0 });
+    setStreamingMessage({ text: '', source: 'LLM_Generation_Miss' });
 
     // Map existing thread messages for pipeline history context
     const pipelineHistory: ChatMessage[] = messages.map((m) => ({
@@ -71,15 +70,12 @@ export function ChatPage() {
           setStreamingMessage({
             text: chunk,
             source: 'LLM_Generation_Miss',
-            tokensUsed: Math.round(chunk.split(' ').length * 1.3),
           });
         },
         sessionId,
       );
 
       const isHit = result.telemetry.source === 'RAM_Exact_Hit' || result.telemetry.source === 'DB_Semantic_Hit';
-      const tokensUsed = result.telemetry.tokensUsed ?? 0;
-
       const assistantMessage: ChatThreadMessage = {
         id: `msg_asst_${Date.now()}`,
         role: 'assistant',
@@ -88,7 +84,7 @@ export function ChatPage() {
         tier: result.telemetry.tier,
         modelName: result.telemetry.modelName,
         needsContext: result.telemetry.needsContext,
-        tokensUsed,
+        latencyMs: result.telemetry.latencyMs,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -105,7 +101,6 @@ export function ChatPage() {
         role: 'assistant',
         text: 'Cerberus encountered an error communicating with the model cascade router.',
         source: 'LLM_Generation_Miss',
-        tokensUsed: 0,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {

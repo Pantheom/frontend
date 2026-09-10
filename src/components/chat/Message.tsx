@@ -53,7 +53,7 @@ interface AssistantMessageProps {
   selectedTier?: string;
   modelName?: string;
   needsContext?: boolean;
-  tokensUsed?: number;
+  latencyMs?: number;
   isStreaming?: boolean;
 }
 
@@ -63,7 +63,7 @@ export function AssistantMessage({
   selectedTier,
   modelName,
   needsContext,
-  tokensUsed,
+  latencyMs,
   isStreaming,
 }: AssistantMessageProps) {
   const tier = (source && source in TIER_LABEL ? TIER_LABEL[source] : undefined) ?? TIER_LABEL.LLM_Generation_Miss;
@@ -80,13 +80,13 @@ export function AssistantMessage({
           {isLlmCall ? (selectedTier ?? 'Tier pending') : 'No LLM call'}
         </span>
         <span className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
-          {isLlmCall
-            ? needsContext === undefined ? 'Context pending' : needsContext ? 'Context used' : 'No context'
-            : 'Context not evaluated'}
+          Context needed: {isLlmCall && needsContext === true ? 'true' : 'false'}
         </span>
-        <span className="text-xs text-muted dark:text-muted-dark text-mist font-mono">
-          {isHit ? 'Cached response' : `${tokensUsed ?? 0} tokens used`}
-        </span>
+        {latencyMs !== undefined && (
+          <span className="text-xs text-muted dark:text-muted-dark text-mist font-mono">
+            Response: {latencyMs} ms
+          </span>
+        )}
       </div>
       {isLlmCall && modelName && (
         <div className="mb-2 text-[11px] font-mono text-mist">

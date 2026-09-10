@@ -40,6 +40,25 @@ export const defaultPipelineConfig: PipelineConfig = {
   useLiveBackend: false,
 };
 
+async function revealResponse(
+  response: string,
+  onTokenChunk?: (chunk: string) => void,
+): Promise<void> {
+  if (!onTokenChunk) return;
+
+  const words = response.split(/(\s+)/);
+  let visible = '';
+
+  for (let index = 0; index < words.length; index += 1) {
+    visible += words[index];
+    onTokenChunk(visible);
+
+    if (index < words.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 4));
+    }
+  }
+}
+
 /**
  * Executes a query through the Cerberus pipeline
  */
@@ -70,6 +89,13 @@ export async function executePipelineQuery(
       if (!res.ok) throw new Error(`Backend returned HTTP ${res.status}`);
       const data = await res.json();
       const latencyMs = Math.round(performance.now() - startTime);
+      const response = data.response ?? 'No response from backend';
+
+      // The backend returns a complete JSON response. Reveal LLM responses
+      // progressively in the existing streaming bubble without changing the API.
+      if (!data.cache_hit) {
+        await revealResponse(response, onTokenChunk);
+      }
 
       // Map tier number to label
       const tierLabel = (
@@ -79,12 +105,12 @@ export async function executePipelineQuery(
       ) as RouteTelemetry['tier'];
 
       return {
-        response: data.response ?? 'No response from backend',
+        response,
         telemetry: {
           source: (data.source as RouteTelemetry['source']) ?? 'LLM_Generation_Miss',
           tier: tierLabel,
           modelName: data.routing?.model,
-          latencyMs: data.latency_ms ?? latencyMs,
+          latencyMs,
           similarityScore: data.debug?.similarity_score,
           tokensUsed: data.cache_hit ? 0 : 450,
           failSafeTriggered: data.debug?.fail_safe_triggered ?? false,
