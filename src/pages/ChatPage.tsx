@@ -18,6 +18,7 @@ export function ChatPage() {
   } | null>(null);
   const [hitCount, setHitCount] = useState(0);
   const [totalQueries, setTotalQueries] = useState(0);
+  const [totalTokens, setTotalTokens] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [chatTitle, setChatTitle] = useState('New conversation');
 
@@ -85,6 +86,7 @@ export function ChatPage() {
         modelName: result.telemetry.modelName,
         needsContext: result.telemetry.needsContext,
         latencyMs: result.telemetry.latencyMs,
+        tokenUsage: result.telemetry.tokenUsage,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -93,6 +95,11 @@ export function ChatPage() {
       setTotalQueries((prev) => prev + 1);
       if (isHit) {
         setHitCount((prev) => prev + 1);
+      }
+
+      // Accumulate session-level tokens (only on real LLM calls)
+      if (result.telemetry.tokenUsage?.total_tokens) {
+        setTotalTokens((prev) => prev + result.telemetry.tokenUsage!.total_tokens!);
       }
     } catch (err) {
       console.error('Pipeline execution error:', err);
@@ -117,6 +124,7 @@ export function ChatPage() {
     setHistoryOpen(false);
     setHitCount(0);
     setTotalQueries(0);
+    setTotalTokens(0);
   };
 
   const handleToggleHistory = () => {
@@ -135,7 +143,7 @@ export function ChatPage() {
       {/* Main Conversation Pane */}
       <div className="flex-1 flex flex-col min-w-0 bg-void relative">
         {/* Header with live earned cache stat */}
-        <ChatHeader title={chatTitle} hitRate={hitRate} />
+        <ChatHeader title={chatTitle} hitRate={hitRate} totalTokens={totalTokens} />
 
         {/* Conversation Thread */}
         <ChatThread

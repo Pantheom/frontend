@@ -1,5 +1,6 @@
-import ReactMarkdown from 'react-markdown';
+﻿import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import type { TokenUsage } from '../../types/telemetry';
 
 interface UserMessageProps {
   text: string;
@@ -55,6 +56,7 @@ interface AssistantMessageProps {
   needsContext?: boolean;
   latencyMs?: number;
   isStreaming?: boolean;
+  tokenUsage?: TokenUsage;
 }
 
 export function AssistantMessage({
@@ -65,6 +67,7 @@ export function AssistantMessage({
   needsContext,
   latencyMs,
   isStreaming,
+  tokenUsage,
 }: AssistantMessageProps) {
   const tier = (source && source in TIER_LABEL ? TIER_LABEL[source] : undefined) ?? TIER_LABEL.LLM_Generation_Miss;
   const isHit = source === 'RAM_Exact_Hit' || source === 'DB_Semantic_Hit';
@@ -72,7 +75,7 @@ export function AssistantMessage({
 
   return (
     <div className="max-w-[75%]">
-      <div className="flex items-center gap-2 mb-1.5">
+      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
         <span className={`text-xs px-2 py-0.5 rounded font-mono ${tier.badgeClass}`}>
           {tier.label}
         </span>
@@ -80,11 +83,19 @@ export function AssistantMessage({
           {isLlmCall ? (selectedTier ?? 'Tier pending') : 'No LLM call'}
         </span>
         <span className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
-          Context needed: {isLlmCall && needsContext === true ? 'true' : 'false'}
+          {'Context needed: '}{isLlmCall && needsContext === true ? 'true' : 'false'}
         </span>
+        {isLlmCall && tokenUsage && tokenUsage.total_tokens !== null && (
+          <span
+            className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist"
+            title={`Provider: ${tokenUsage.provider ?? '-'} - Model: ${tokenUsage.model ?? '-'}`}
+          >
+            {'in:'} {tokenUsage.prompt_tokens ?? '?'} {'out:'} {tokenUsage.completion_tokens ?? '?'} {'total:'} {tokenUsage.total_tokens} {'tok'}
+          </span>
+        )}
         {latencyMs !== undefined && (
           <span className="text-xs text-muted dark:text-muted-dark text-mist font-mono">
-            Response: {latencyMs} ms
+            {'Response: '}{latencyMs} {'ms'}
           </span>
         )}
       </div>

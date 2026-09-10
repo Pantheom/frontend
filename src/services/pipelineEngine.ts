@@ -112,7 +112,7 @@ export async function executePipelineQuery(
           modelName: data.routing?.model,
           latencyMs,
           similarityScore: data.debug?.similarity_score,
-          tokensUsed: data.cache_hit ? 0 : 450,
+          tokenUsage: data.token_usage ?? undefined,
           failSafeTriggered: data.debug?.fail_safe_triggered ?? false,
           needsContext: data.context?.needs_context ?? false,
         },

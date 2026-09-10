@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { UserMessage, AssistantMessage } from './Message';
 import EmptyState from './EmptyState';
 
+import type { TokenUsage } from '../../types/telemetry';
+
 export interface ChatThreadMessage {
   id?: string;
   role: 'user' | 'assistant';
@@ -11,6 +13,7 @@ export interface ChatThreadMessage {
   modelName?: string;
   needsContext?: boolean;
   latencyMs?: number;
+  tokenUsage?: TokenUsage;
 }
 
 interface ChatThreadProps {
@@ -48,6 +51,7 @@ export default function ChatThread({
             modelName={m.modelName}
             needsContext={m.needsContext}
             latencyMs={m.latencyMs}
+            tokenUsage={m.tokenUsage}
           />
         )
       )}

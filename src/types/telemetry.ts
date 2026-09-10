@@ -2,6 +2,14 @@ export type CacheSource = 'RAM_Exact_Hit' | 'DB_Semantic_Hit' | 'LLM_Generation_
 
 export type ModelTier = 'Tier 1 — Small' | 'Tier 2 — Medium' | 'Tier 3 — Large';
 
+export interface TokenUsage {
+  prompt_tokens: number | null;
+  completion_tokens: number | null;
+  total_tokens: number | null;
+  provider: 'Groq' | 'Google' | null;
+  model: string | null;
+}
+
 export interface RouteTelemetry {
   source: CacheSource;
   tier?: ModelTier;
@@ -9,7 +17,7 @@ export interface RouteTelemetry {
   provider?: 'Groq' | 'Google' | 'In-Memory' | 'Supabase pgvector';
   similarityScore?: number;
   latencyMs: number;
-  tokensUsed?: number;
+  tokenUsage?: TokenUsage;
   costSavedUsd?: number;
   failSafeTriggered?: boolean;
   needsContext?: boolean;
