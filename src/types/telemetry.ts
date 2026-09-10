@@ -1,4 +1,4 @@
-﻿export type CacheSource = 'RAM_Exact_Hit' | 'DB_Semantic_Hit' | 'LLM_Generation_Miss';
+export type CacheSource = 'RAM_Exact_Hit' | 'DB_Semantic_Hit' | 'LLM_Generation_Miss';
 
 export type ModelTier =
   | 'Tier 1 — Small'
@@ -38,4 +38,21 @@ export interface ChatMessage {
   timestamp: string;
   telemetry?: RouteTelemetry;
   isStreaming?: boolean;
+}
+
+export interface RequestAuditLog {
+  id: string;
+  timestamp: string;
+  prompt: string;
+  source: CacheSource;
+  tier?: ModelTier;
+  model: string;
+  provider: string;
+  latencyMs: number;
+  tokensBilled: number;
+  costSavedUsd: number;
+  g1Score?: number;
+  g2Score?: number;
+  needsContext: boolean;
+  failSafeTriggered: boolean;
 }

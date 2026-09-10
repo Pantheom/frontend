@@ -57,7 +57,7 @@ export const ArchitectureSection = () => {
             </div>
             <h3 className="font-display text-xl text-fog">Model Cascade Router</h3>
             <p className="text-sm text-mist leading-relaxed font-body">
-              Evaluates queries via dual RouteLLM controllers. 53% of queries resolve on Tier 1 (Llama-3.3-70b via Groq), 20% on Tier 2 (Gemini-2.5-Flash), and 27% escalate to Tier 3 (Gemini-3.5-Flash) with fail-safe escalation.
+              Evaluates queries via dual RouteLLM controllers. 53% of queries resolve on Tier 1 (gpt oss 20B), 20% on Tier 2 (gemini 3.1 flash lite), and 27% escalate to Tier 3 (gemini 3.5 flash) with fail-safe escalation.
             </p>
             <div className="pt-3">
               <span className="font-mono text-xs text-gold bg-gold-muted px-2.5 py-1 rounded">

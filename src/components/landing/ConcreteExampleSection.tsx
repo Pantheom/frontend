@@ -65,14 +65,14 @@ export const ConcreteExampleSection = () => {
   fn: T, 
   waitMs: number, 
   immediate = false
-) { /* routed to Llama-3.3-70b */ }`}</code>
+) { /* routed to gpt oss 20B */ }`}</code>
               </div>
             </div>
 
             <div className="pt-5 border-t border-line-light flex items-center justify-between text-xs font-mono">
               <span className="text-mist flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-gold" />
-                <span>Groq Llama-3.3-70b (G1 Score: 0.31)</span>
+                <span>gpt oss 20B (G1 Score: 0.31)</span>
               </span>
               <span className="text-gold">88% cost reduction vs Tier 3</span>
             </div>

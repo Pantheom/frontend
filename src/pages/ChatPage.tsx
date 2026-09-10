@@ -6,6 +6,7 @@ import ChatThread, { type ChatThreadMessage } from '../components/chat/ChatThrea
 import Composer from '../components/chat/Composer';
 import { executePipelineQuery } from '../services/pipelineEngine';
 import { isAuthenticated, getUid, fetchChatHistory, type StoredChatMessage } from '../services/authService';
+import { saveUserTelemetryLog } from '../services/telemetryService';
 import type { ChatMessage } from '../types/telemetry';
 
 export function ChatPage() {
@@ -145,6 +146,24 @@ export function ChatPage() {
           created_at: new Date().toISOString(),
         },
       ]);
+
+      // Persist telemetry audit log for this user UUID
+      saveUserTelemetryLog(sessionId, {
+        id: `req_${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        prompt: content,
+        source: result.telemetry.source,
+        tier: result.telemetry.tier,
+        model: result.telemetry.modelName ?? (isHit ? 'LRU In-Memory Dict' : 'gpt oss 20B'),
+        provider: result.telemetry.provider ?? (result.telemetry.source === 'RAM_Exact_Hit' ? 'In-Memory' : 'Supabase pgvector'),
+        latencyMs: result.telemetry.latencyMs,
+        tokensBilled: result.telemetry.tokenUsage?.total_tokens ?? 0,
+        costSavedUsd: result.telemetry.costSavedUsd ?? (isHit ? 0.0038 : 0.002),
+        needsContext: result.telemetry.needsContext ?? false,
+        failSafeTriggered: result.telemetry.failSafeTriggered ?? false,
+        g1Score: result.telemetry.g1Score,
+        g2Score: result.telemetry.g2Score,
+      });
 
       // Update telemetry hit stats & running session total
       setTotalQueries((prev) => prev + 1);

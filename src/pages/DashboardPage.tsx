@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { CacheTag } from '../components/ui/CacheTag';
 import {
   ArrowLeft,
@@ -13,124 +13,48 @@ import {
   Code,
   Shield,
   CheckCircle2,
+  User,
+  LogOut,
 } from 'lucide-react';
-import type { CacheSource, ModelTier } from '../types/telemetry';
-
-interface RequestAuditLog {
-  id: string;
-  timestamp: string;
-  prompt: string;
-  source: CacheSource;
-  tier?: ModelTier;
-  model: string;
-  provider: string;
-  latencyMs: number;
-  tokensBilled: number;
-  costSavedUsd: number;
-  g1Score?: number;
-  g2Score?: number;
-  needsContext: boolean;
-  failSafeTriggered: boolean;
-}
-
-const SAMPLE_LOGS: RequestAuditLog[] = [
-  {
-    id: 'req_9812_01',
-    timestamp: '02:04:12',
-    prompt: 'What is semantic caching in LLM architectures?',
-    source: 'DB_Semantic_Hit',
-    model: 'all-mpnet-base-v2 (768-dim)',
-    provider: 'Supabase pgvector',
-    latencyMs: 74,
-    tokensBilled: 0,
-    costSavedUsd: 0.0042,
-    needsContext: false,
-    failSafeTriggered: false,
-  },
-  {
-    id: 'req_9812_02',
-    timestamp: '02:02:45',
-    prompt: 'What is machine learning?',
-    source: 'RAM_Exact_Hit',
-    model: 'LRU In-Memory Dict',
-    provider: 'In-Memory',
-    latencyMs: 0.8,
-    tokensBilled: 0,
-    costSavedUsd: 0.0038,
-    needsContext: false,
-    failSafeTriggered: false,
-  },
-  {
-    id: 'req_9812_03',
-    timestamp: '01:58:20',
-    prompt: 'Implement a TypeScript debounce utility function with immediate execution support.',
-    source: 'LLM_Generation_Miss',
-    tier: 'Tier 1 — Small',
-    model: 'llama-3.3-70b-versatile',
-    provider: 'Groq',
-    latencyMs: 390,
-    tokensBilled: 210,
-    costSavedUsd: 0.0031,
-    g1Score: 0.28,
-    needsContext: false,
-    failSafeTriggered: false,
-  },
-  {
-    id: 'req_9812_04',
-    timestamp: '01:54:02',
-    prompt: 'Synthesize the inter-service isolation principles of hub-and-spoke backend systems.',
-    source: 'LLM_Generation_Miss',
-    tier: 'Tier 2 — Medium',
-    model: 'gemini-2.5-flash',
-    provider: 'Google',
-    latencyMs: 640,
-    tokensBilled: 380,
-    costSavedUsd: 0.0018,
-    g1Score: 0.64,
-    g2Score: 0.38,
-    needsContext: false,
-    failSafeTriggered: false,
-  },
-  {
-    id: 'req_9812_05',
-    timestamp: '01:49:15',
-    prompt: 'Explain quantum key distribution algorithms with zero-knowledge proof requirements.',
-    source: 'LLM_Generation_Miss',
-    tier: 'Tier 3 — Large',
-    model: 'gemini-3.5-flash',
-    provider: 'Google',
-    latencyMs: 1280,
-    tokensBilled: 740,
-    costSavedUsd: 0.0,
-    g1Score: 0.84,
-    g2Score: 0.79,
-    needsContext: false,
-    failSafeTriggered: false,
-  },
-  {
-    id: 'req_9812_06',
-    timestamp: '01:42:33',
-    prompt: 'Continue that explanation and contrast BB84 with E91 protocols.',
-    source: 'LLM_Generation_Miss',
-    tier: 'Tier 3 — Large',
-    model: 'gemini-3.5-flash',
-    provider: 'Google',
-    latencyMs: 1350,
-    tokensBilled: 860,
-    costSavedUsd: 0.0,
-    g1Score: 0.81,
-    g2Score: 0.75,
-    needsContext: true,
-    failSafeTriggered: false,
-  },
-];
+import type { RequestAuditLog } from '../types/telemetry';
+import { isAuthenticated, getUid, logout } from '../services/authService';
+import { loadUserDashboardData, type UserDashboardStats } from '../services/telemetryService';
 
 export const DashboardPage = () => {
+  const navigate = useNavigate();
+  const [logs, setLogs] = useState<RequestAuditLog[]>([]);
+  const [stats, setStats] = useState<UserDashboardStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterSource, setFilterSource] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLog, setSelectedLog] = useState<RequestAuditLog | null>(SAMPLE_LOGS[0]);
+  const [selectedLog, setSelectedLog] = useState<RequestAuditLog | null>(null);
 
-  const filteredLogs = SAMPLE_LOGS.filter((log) => {
+  const uid = getUid();
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+
+    setIsLoading(true);
+    loadUserDashboardData()
+      .then((data) => {
+        setLogs(data.logs);
+        setStats(data.stats);
+        if (data.logs.length > 0) {
+          setSelectedLog(data.logs[0]);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load user dashboard telemetry:', err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [navigate]);
+
+  const filteredLogs = logs.filter((log) => {
     const matchesSource = filterSource === 'ALL' || log.source === filterSource;
     const matchesQuery =
       log.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -160,12 +84,31 @@ export const DashboardPage = () => {
         </div>
 
         <div className="flex items-center gap-4">
+          {uid && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded bg-surface border border-line text-[11px] font-mono text-mist">
+              <User className="w-3 h-3 text-gold" />
+              <span className="truncate max-w-[140px]" title={uid}>
+                {uid.slice(0, 8)}...
+              </span>
+            </div>
+          )}
           <Link
             to="/chat"
             className="text-xs uppercase tracking-wider font-mono font-medium px-4 py-1.5 rounded bg-gold text-void hover:bg-gold-hover transition-colors"
           >
             Open Chat Surface →
           </Link>
+          <button
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            className="text-xs font-mono text-mist hover:text-red-400 flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-surface border border-transparent hover:border-line transition-colors"
+            title="Log out"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Log out</span>
+          </button>
         </div>
       </header>
 
@@ -174,7 +117,7 @@ export const DashboardPage = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <span className="font-mono text-xs text-gold uppercase tracking-widest block mb-2">
-              Bento Telemetry Observability
+              User Observability • Full Chat History
             </span>
             <h1 className="headline font-display text-3xl md:text-4xl text-fog font-semibold">
               Pipeline Performance
@@ -182,7 +125,11 @@ export const DashboardPage = () => {
           </div>
           <div className="flex items-center gap-3 font-mono text-xs text-mist">
             <span className="w-2 h-2 rounded-full bg-cache-hit animate-pulse" />
-            <span>Telemetry Broker Synchronized (AWS Free Tier)</span>
+            <span>
+              {isLoading
+                ? 'Syncing User Telemetry...'
+                : `Active Telemetry (${stats?.totalRequests || 0} Turns Processed)`}
+            </span>
           </div>
         </div>
 
@@ -195,8 +142,14 @@ export const DashboardPage = () => {
               <Zap className="w-4 h-4 text-cache-hit" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-3xl text-fog font-semibold">68.4%</span>
-              <span className="font-mono text-xs text-cache-hit">+14.2% vs baseline</span>
+              <span className="font-display text-3xl text-fog font-semibold">
+                {stats ? `${stats.cacheHitRate}%` : '0%'}
+              </span>
+              <span className="font-mono text-xs text-cache-hit">
+                {stats && stats.totalRequests > 0
+                  ? `${Math.round((stats.cacheHitRate / 100) * stats.totalRequests)} hits`
+                  : 'live metric'}
+              </span>
             </div>
             <p className="text-xs text-mist font-body">
               RAM exact hits (&lt;1ms) + pgvector cosine hits (&gt;0.85 threshold)
@@ -210,8 +163,12 @@ export const DashboardPage = () => {
               <DollarSign className="w-4 h-4 text-cache-hit" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-3xl text-fog font-semibold">73.8%</span>
-              <span className="font-mono text-xs text-cache-hit">$1.42 saved today</span>
+              <span className="font-display text-3xl text-fog font-semibold">
+                {stats ? `${stats.costReductionPct}%` : '0%'}
+              </span>
+              <span className="font-mono text-xs text-cache-hit">
+                ${stats ? stats.costSavedUsd.toFixed(2) : '0.00'} saved
+              </span>
             </div>
             <p className="text-xs text-mist font-body">
               Calculated against raw Gemini 3.5 Frontier baseline pricing
@@ -225,18 +182,37 @@ export const DashboardPage = () => {
               <Clock className="w-4 h-4 text-mist" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-3xl text-fog font-semibold">184ms</span>
+              <span className="font-display text-3xl text-fog font-semibold">
+                {stats ? `${stats.avgLatencyMs}ms` : '0ms'}
+              </span>
               <span className="font-mono text-xs text-mist">weighted avg</span>
             </div>
             <p className="text-xs text-mist font-body">
               Includes &lt;1ms RAM hits, 85ms DB hits, and routed misses
             </p>
           </div>
+
+          {/* KPI 4: Total User Turns */}
+          <div className="p-6 rounded-lg border border-line bg-surface/50 space-y-3">
+            <div className="flex items-center justify-between text-mist">
+              <span className="text-xs font-mono uppercase">Total Queries</span>
+              <Layers className="w-4 h-4 text-gold" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="font-display text-3xl text-fog font-semibold">
+                {stats ? stats.totalRequests : 0}
+              </span>
+              <span className="font-mono text-xs text-gold">full history</span>
+            </div>
+            <p className="text-xs text-mist font-body">
+              All persisted user turns across every chat session
+            </p>
+          </div>
         </div>
 
         {/* Secondary Bento Grid: Router Breakdown & Context Classifier */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Model Router Distribution (calibrated from architecture doc) */}
+          {/* Model Router Distribution */}
           <div className="lg:col-span-2 p-6 rounded-lg border border-line bg-surface/40 space-y-6">
             <div className="flex items-center justify-between">
               <div>
@@ -249,22 +225,34 @@ export const DashboardPage = () => {
             {/* Distribution Bar */}
             <div className="space-y-2">
               <div className="h-3 w-full rounded-full bg-surface flex overflow-hidden border border-line-light">
-                <div style={{ width: '53.3%' }} className="bg-cache-hit" title="Tier 1 Small: 53.3%" />
-                <div style={{ width: '20.0%' }} className="bg-gold" title="Tier 2 Medium: 20.0%" />
-                <div style={{ width: '26.7%' }} className="bg-cache-miss" title="Tier 3 Large: 26.7%" />
+                <div
+                  style={{ width: `${stats?.tierDistribution.tier1Pct ?? 0}%` }}
+                  className="bg-cache-hit transition-all duration-500"
+                  title={`Tier 1 Small: ${stats?.tierDistribution.tier1Pct ?? 0}%`}
+                />
+                <div
+                  style={{ width: `${stats?.tierDistribution.tier2Pct ?? 0}%` }}
+                  className="bg-gold transition-all duration-500"
+                  title={`Tier 2 Medium: ${stats?.tierDistribution.tier2Pct ?? 0}%`}
+                />
+                <div
+                  style={{ width: `${stats?.tierDistribution.tier3Pct ?? 0}%` }}
+                  className="bg-cache-miss transition-all duration-500"
+                  title={`Tier 3 Large: ${stats?.tierDistribution.tier3Pct ?? 0}%`}
+                />
               </div>
               <div className="flex justify-between text-[11px] font-mono text-mist">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-cache-hit" />
-                  <span>Tier 1: Small (53.3%)</span>
+                  <span>Tier 1: Small ({stats?.tierDistribution.tier1Pct ?? 0}%)</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-gold" />
-                  <span>Tier 2: Medium (20.0%)</span>
+                  <span>Tier 2: Medium ({stats?.tierDistribution.tier2Pct ?? 0}%)</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-cache-miss" />
-                  <span>Tier 3: Large (26.7%)</span>
+                  <span>Tier 3: Large ({stats?.tierDistribution.tier3Pct ?? 0}%)</span>
                 </span>
               </div>
             </div>
@@ -272,18 +260,33 @@ export const DashboardPage = () => {
             {/* Tier Spec Details */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-line-light font-mono text-xs">
               <div className="p-3 rounded bg-surface border border-line-light space-y-1">
-                <span className="text-cache-hit font-medium block">Tier 1 — Small</span>
-                <span className="text-fog text-xs block">llama-3.3-70b</span>
-                <span className="text-[10px] text-mist">Groq Provider • G1 Score &lt; 0.35</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-cache-hit font-medium block">Tier 1 — Small</span>
+                  <span className="text-mist text-[10px]">
+                    {stats?.tierDistribution.tier1Count ?? 0} calls
+                  </span>
+                </div>
+                <span className="text-fog text-xs block font-mono">gpt oss 20B</span>
+                <span className="text-[10px] text-mist">Open-Source • G1 Score &lt; 0.35</span>
               </div>
               <div className="p-3 rounded bg-surface border border-line-light space-y-1">
-                <span className="text-gold font-medium block">Tier 2 — Medium</span>
-                <span className="text-fog text-xs block">gemini-2.5-flash</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gold font-medium block">Tier 2 — Medium</span>
+                  <span className="text-mist text-[10px]">
+                    {stats?.tierDistribution.tier2Count ?? 0} calls
+                  </span>
+                </div>
+                <span className="text-fog text-xs block font-mono">gemini 3.1 flash lite</span>
                 <span className="text-[10px] text-mist">Google Provider • G2 Score &lt; 0.60</span>
               </div>
               <div className="p-3 rounded bg-surface border border-line-light space-y-1">
-                <span className="text-mist font-medium block">Tier 3 — Large</span>
-                <span className="text-fog text-xs block">gemini-3.5-flash</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-mist font-medium block">Tier 3 — Large</span>
+                  <span className="text-mist text-[10px]">
+                    {stats?.tierDistribution.tier3Count ?? 0} calls
+                  </span>
+                </div>
+                <span className="text-fog text-xs block font-mono">gemini 3.5 flash</span>
                 <span className="text-[10px] text-mist">Google Frontier • High Complexity</span>
               </div>
             </div>
@@ -305,17 +308,23 @@ export const DashboardPage = () => {
             <div className="space-y-3 font-mono text-xs">
               <div className="p-3 rounded bg-surface border border-line-light flex items-center justify-between">
                 <span className="text-mist">Self-Contained (Bypassed)</span>
-                <span className="text-cache-hit font-medium">81.4%</span>
+                <span className="text-cache-hit font-medium">
+                  {stats ? `${stats.contextEfficiency.selfContainedPct}%` : '0%'}
+                </span>
               </div>
               <div className="p-3 rounded bg-surface border border-line-light flex items-center justify-between">
                 <span className="text-mist">Context Attached</span>
-                <span className="text-fog font-medium">18.6%</span>
+                <span className="text-fog font-medium">
+                  {stats ? `${stats.contextEfficiency.contextAttachedPct}%` : '0%'}
+                </span>
               </div>
             </div>
 
             <div className="pt-4 border-t border-line-light flex items-center gap-2 text-xs font-mono text-mist">
               <CheckCircle2 className="w-3.5 h-3.5 text-cache-hit" />
-              <span>Saves ~600 tokens/query on bypassed turns</span>
+              <span>
+                Saves ~{stats ? stats.contextEfficiency.tokensSavedEstimate.toLocaleString() : 0} tokens on bypassed turns
+              </span>
             </div>
           </div>
         </div>
@@ -324,8 +333,8 @@ export const DashboardPage = () => {
         <div className="p-6 rounded-lg border border-line bg-surface/40 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="font-mono text-xs text-gold uppercase block">Centralized Hub Logs</span>
-              <h3 className="font-display text-xl text-fog font-medium">Real-Time Request Stream</h3>
+              <span className="font-mono text-xs text-gold uppercase block">User Request Audit</span>
+              <h3 className="font-display text-xl text-fog font-medium">Historical Query Stream</h3>
             </div>
 
             {/* Filter and Search Bar */}
@@ -374,25 +383,44 @@ export const DashboardPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line-light">
-                  {filteredLogs.map((log) => {
-                    const isSelected = selectedLog?.id === log.id;
-                    return (
-                      <tr
-                        key={log.id}
-                        onClick={() => setSelectedLog(log)}
-                        className={`cursor-pointer transition-colors ${
-                          isSelected ? 'bg-gold/5' : 'hover:bg-surface/50'
-                        }`}
-                      >
-                        <td className="p-3 text-mist whitespace-nowrap">{log.timestamp}</td>
-                        <td className="p-3 font-body text-fog/90 max-w-xs truncate">{log.prompt}</td>
-                        <td className="p-3 whitespace-nowrap">
-                          <CacheTag source={log.source} compact />
-                        </td>
-                        <td className="p-3 text-mist whitespace-nowrap">{log.latencyMs}ms</td>
-                      </tr>
-                    );
-                  })}
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={4} className="p-8 text-center text-mist italic">
+                        Loading user chat history telemetry...
+                      </td>
+                    </tr>
+                  ) : filteredLogs.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="p-8 text-center text-mist">
+                        <div className="flex flex-col items-center gap-2">
+                          <span>No request logs found for this user.</span>
+                          <Link to="/chat" className="text-xs text-gold hover:underline font-medium">
+                            Send queries in the Chat Surface to populate telemetry →
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredLogs.map((log) => {
+                      const isSelected = selectedLog?.id === log.id;
+                      return (
+                        <tr
+                          key={log.id}
+                          onClick={() => setSelectedLog(log)}
+                          className={`cursor-pointer transition-colors ${
+                            isSelected ? 'bg-gold/5' : 'hover:bg-surface/50'
+                          }`}
+                        >
+                          <td className="p-3 text-mist whitespace-nowrap">{log.timestamp}</td>
+                          <td className="p-3 font-body text-fog/90 max-w-xs truncate">{log.prompt}</td>
+                          <td className="p-3 whitespace-nowrap">
+                            <CacheTag source={log.source} compact />
+                          </td>
+                          <td className="p-3 text-mist whitespace-nowrap">{log.latencyMs}ms</td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -439,9 +467,12 @@ export const DashboardPage = () => {
                       {JSON.stringify(
                         {
                           request_id: selectedLog.id,
+                          user_id: uid,
                           source: selectedLog.source,
                           tier: selectedLog.tier,
                           latency_ms: selectedLog.latencyMs,
+                          tokens_billed: selectedLog.tokensBilled,
+                          cost_saved_usd: selectedLog.costSavedUsd,
                           g1_score: selectedLog.g1Score,
                           g2_score: selectedLog.g2Score,
                           needs_context: selectedLog.needsContext,
@@ -471,3 +502,5 @@ export const DashboardPage = () => {
     </div>
   );
 };
+
+export default DashboardPage;

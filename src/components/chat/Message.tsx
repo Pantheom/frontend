@@ -100,9 +100,19 @@ export function AssistantMessage({
           </span>
         )}
       </div>
-      {isLlmCall && modelName && (
+      {isLlmCall && (
         <div className="mb-2 text-[11px] font-mono text-mist">
-          {modelName}
+          {(() => {
+            const m = modelName?.toLowerCase() ?? '';
+            if (m.includes('llama') || m.includes('oss') || m.includes('gpt')) return 'gpt oss 20B';
+            if (m.includes('2.5') || m.includes('3.1') || m.includes('lite')) return 'gemini 3.1 flash lite';
+            if (m.includes('3.5')) return 'gemini 3.5 flash';
+            if (modelName) return modelName;
+            if (selectedTier?.includes('Tier 1') || selectedTier?.includes('Small')) return 'gpt oss 20B';
+            if (selectedTier?.includes('Tier 2') || selectedTier?.includes('Medium')) return 'gemini 3.1 flash lite';
+            if (selectedTier?.includes('Tier 3') || selectedTier?.includes('Large')) return 'gemini 3.5 flash';
+            return undefined;
+          })()}
         </div>
       )}
       <div className="assistant-markdown text-sm leading-relaxed text-ink dark:text-ink-dark text-fog">

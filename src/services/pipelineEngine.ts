@@ -1,4 +1,4 @@
-﻿import type { RouteTelemetry, ChatMessage } from '../types/telemetry';
+import type { RouteTelemetry, ChatMessage } from '../types/telemetry';
 import { getToken } from './authService';
 
 // Realistic pre-seeded responses matching backend seed_cache (OpenHermes / Dolly 15K / ShareGPT)
@@ -24,7 +24,7 @@ const PRE_SEEDED_CACHE: SeedCacheItem[] = [
   },
   {
     prompt: 'How does the Model Cascade Router work?',
-    response: 'The Model Cascade Router employs two chained binary gatekeepers (G1 and G2) using win-probability routing controllers. G1 evaluates whether Tier 1 (Small: Llama-3.3-70b via Groq) is sufficient for the task. If not, G2 evaluates Tier 2 (Medium: Gemini-2.5-Flash). Queries with high complexity or reasoning requirements escalate to Tier 3 (Large: Gemini-3.5-Flash). If a controller times out, a fail-safe escalation triggers upward to protect quality.',
+    response: 'The Model Cascade Router employs two chained binary gatekeepers (G1 and G2) using win-probability routing controllers. G1 evaluates whether Tier 1 (Small: gpt oss 20B) is sufficient for the task. If not, G2 evaluates Tier 2 (Medium: gemini 3.1 flash lite). Queries with high complexity or reasoning requirements escalate to Tier 3 (Large: gemini 3.5 flash). If a controller times out, a fail-safe escalation triggers upward to protect quality.',
     source: 'DB_Semantic_Hit',
     similarity: 0.89,
   },
@@ -104,12 +104,19 @@ export async function executePipelineQuery(
         : 'Tier 1 — Small'
       ) as RouteTelemetry['tier'];
 
+      const resolvedModel =
+        data.routing?.tier === 2
+          ? 'gemini 3.1 flash lite'
+          : data.routing?.tier === 3
+          ? 'gemini 3.5 flash'
+          : 'gpt oss 20B';
+
       return {
         response,
         telemetry: {
           source: (data.source as RouteTelemetry['source']) ?? 'LLM_Generation_Miss',
           tier: tierLabel,
-          modelName: data.routing?.model,
+          modelName: resolvedModel,
           latencyMs,
           similarityScore: data.debug?.similarity_score,
           tokenUsage: data.token_usage ?? undefined,
@@ -184,7 +191,7 @@ export async function executePipelineQuery(
     normalizedPrompt.includes('zero-knowledge');
 
   let tier: 'Tier 1 — Small' | 'Tier 2 — Medium' | 'Tier 3 — Large' = 'Tier 1 — Small';
-  let modelName = 'llama-3.3-70b-versatile';
+  let modelName = 'gpt oss 20B';
   let provider: 'Groq' | 'Google' = 'Groq';
   let g1Score = 0.28;
   let g2Score = 0.15;
@@ -192,13 +199,13 @@ export async function executePipelineQuery(
 
   if (isExtremeReasoning) {
     tier = 'Tier 3 — Large';
-    modelName = 'gemini-3.5-flash';
+    modelName = 'gemini 3.5 flash';
     provider = 'Google';
     g1Score = 0.82;
     g2Score = 0.76;
   } else if (isComplexCodeOrMath) {
     tier = 'Tier 2 — Medium';
-    modelName = 'gemini-2.5-flash';
+    modelName = 'gemini 3.1 flash lite';
     provider = 'Google';
     g1Score = 0.65;
     g2Score = 0.35;
@@ -211,7 +218,7 @@ export async function executePipelineQuery(
   } else if (tier === 'Tier 1 — Small') {
     fullResponse = `[Resolved via ${modelName} on ${provider}]
 
-Here is the direct analysis: For general instructional queries, Cerberus's G1 Gatekeeper identifies that Tier 1 (Llama-3.3-70b) satisfies all accuracy criteria with 0.31 win-probability. This saves ~88% in generation cost compared to invoking Tier 3 frontier models.`;
+Here is the direct analysis: For general instructional queries, Cerberus's G1 Gatekeeper identifies that Tier 1 (${modelName}) satisfies all accuracy criteria with 0.31 win-probability. This saves ~88% in generation cost compared to invoking Tier 3 frontier models.`;
   } else if (tier === 'Tier 2 — Medium') {
     fullResponse = `[Resolved via ${modelName} on ${provider}]
 

@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
-import { Plus, Clock, BarChart2, ArrowLeft } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, Clock, BarChart2, ArrowLeft, LogOut } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
+import { logout } from '../../services/authService';
 
 interface NavRailProps {
   onNewChat?: () => void;
@@ -13,6 +14,13 @@ export default function NavRail({
   onToggleHistory,
   historyOpen,
 }: NavRailProps) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <nav className="w-48 shrink-0 border-r border-line flex flex-col p-4 gap-2 justify-between select-none bg-void">
       <div className="flex flex-col gap-2">
@@ -62,6 +70,15 @@ export default function NavRail({
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Overview</span>
         </Link>
+
+        <button
+          onClick={handleLogout}
+          className="text-xs text-mist hover:text-red-400 py-1.5 px-2 flex items-center gap-2 transition-colors font-mono w-full text-left"
+          title="Sign out of Cerberus"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span>Log out</span>
+        </button>
       </div>
     </nav>
   );
