@@ -5,12 +5,14 @@ import ChatHeader from '../components/chat/ChatHeader';
 import ChatThread, { type ChatThreadMessage } from '../components/chat/ChatThread';
 import Composer from '../components/chat/Composer';
 import { executePipelineQuery } from '../services/pipelineEngine';
-import { isAuthenticated, getUid } from '../services/authService';
+import { isAuthenticated, getUid, fetchChatHistory, type StoredChatMessage } from '../services/authService';
 import type { ChatMessage } from '../types/telemetry';
 
 export function ChatPage() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatThreadMessage[]>([]);
+  const [historyItems, setHistoryItems] = useState<StoredChatMessage[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [streamingMessage, setStreamingMessage] = useState<{
     text: string;
@@ -22,9 +24,41 @@ export function ChatPage() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [chatTitle, setChatTitle] = useState('New conversation');
 
-  // Auth guard — redirect to /login if not authenticated
+  // Auth guard and initial history load for current user
   useEffect(() => {
-    if (!isAuthenticated()) navigate('/login');
+    if (!isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+
+    setIsLoadingHistory(true);
+    fetchChatHistory()
+      .then((rows) => {
+        if (rows && rows.length > 0) {
+          setHistoryItems(rows);
+          const loaded: ChatThreadMessage[] = rows.map((r) => ({
+            id: `msg_db_${r.id}`,
+            role: r.role,
+            text: r.message,
+          }));
+          setMessages(loaded);
+
+          const firstUser = rows.find((r) => r.role === 'user');
+          if (firstUser) {
+            setChatTitle(
+              firstUser.message.length > 28
+                ? `${firstUser.message.slice(0, 28)}...`
+                : firstUser.message
+            );
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load chat history:', err);
+      })
+      .finally(() => {
+        setIsLoadingHistory(false);
+      });
   }, [navigate]);
 
   // Fixed session per user — use uid stored at login time
@@ -90,6 +124,27 @@ export function ChatPage() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+
+      // Keep in-memory history updated for this session
+      setHistoryItems((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          uid: sessionId,
+          session_id: sessionId,
+          role: 'user',
+          message: content,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: Date.now() + 1,
+          uid: sessionId,
+          session_id: sessionId,
+          role: 'assistant',
+          message: result.response,
+          created_at: new Date().toISOString(),
+        },
+      ]);
 
       // Update telemetry hit stats & running session total
       setTotalQueries((prev) => prev + 1);
@@ -160,7 +215,7 @@ export function ChatPage() {
           <aside className="absolute inset-y-0 left-0 w-72 bg-surface border-r border-line p-4 z-20 flex flex-col shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-line mb-4">
               <span className="text-xs font-mono font-medium uppercase text-mist">
-                Recent Queries
+                Chat History
               </span>
               <button
                 onClick={() => setHistoryOpen(false)}
@@ -170,24 +225,43 @@ export function ChatPage() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto space-y-2">
-              {[
-                'What is semantic caching in LLM architectures?',
-                'What is machine learning?',
-                'How does the Model Cascade Router work?',
-                'Explain quantum key distribution algorithms',
-              ].map((query, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    handleSend(query);
-                    setHistoryOpen(false);
-                  }}
-                  className="w-full text-left p-2.5 rounded text-xs text-mist hover:text-fog hover:bg-surface-elevated transition-colors truncate border border-transparent hover:border-line-light"
-                  title={query}
-                >
-                  "{query}"
-                </button>
-              ))}
+              {isLoadingHistory ? (
+                <div className="text-xs text-mist/60 p-2 italic">Loading history...</div>
+              ) : historyItems.filter((item) => item.role === 'user').length === 0 ? (
+                <div className="text-xs text-mist/60 p-2 italic">No previous queries found.</div>
+              ) : (
+                historyItems
+                  .filter((item) => item.role === 'user')
+                  .slice()
+                  .reverse()
+                  .map((item, idx) => (
+                    <button
+                      key={item.id || idx}
+                      onClick={() => {
+                        if (messages.length === 0) {
+                          setMessages(
+                            historyItems.map((r) => ({
+                              id: `msg_db_${r.id}`,
+                              role: r.role,
+                              text: r.message,
+                            }))
+                          );
+                        }
+                        setTimeout(() => {
+                          const target = document.getElementById(`msg_db_${item.id}`);
+                          if (target) {
+                            target.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }, 50);
+                        setHistoryOpen(false);
+                      }}
+                      className="w-full text-left p-2.5 rounded text-xs text-mist hover:text-fog hover:bg-surface-elevated transition-colors truncate border border-transparent hover:border-line-light"
+                      title={item.message}
+                    >
+                      "{item.message}"
+                    </button>
+                  ))
+              )}
             </div>
             <button
               onClick={handleNewChat}

@@ -1,14 +1,15 @@
-﻿import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { TokenUsage } from '../../types/telemetry';
 
 interface UserMessageProps {
+  id?: string;
   text: string;
 }
 
-export function UserMessage({ text }: UserMessageProps) {
+export function UserMessage({ id, text }: UserMessageProps) {
   return (
-    <div className="self-end max-w-[75%] bg-surface border border-line rounded-lg px-4 py-2.5 text-sm leading-relaxed text-fog">
+    <div id={id} className="self-end max-w-[75%] bg-surface border border-line rounded-lg px-4 py-2.5 text-sm leading-relaxed text-fog">
       {text}
     </div>
   );

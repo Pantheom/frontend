@@ -41,7 +41,7 @@ export default function ChatThread({
     <div className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-6">
       {messages.map((m, i) =>
         m.role === 'user' ? (
-          <UserMessage key={m.id || i} text={m.text} />
+          <UserMessage key={m.id || i} id={m.id} text={m.text} />
         ) : (
           <AssistantMessage
             key={m.id || i}

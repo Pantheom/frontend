@@ -65,3 +65,33 @@ export async function register(email: string, password: string): Promise<void> {
   }
 }
 
+// ─── Chat History ───────────────────────────────────────────────────────────
+
+export interface StoredChatMessage {
+  id: number;
+  uid: string;
+  session_id: string;
+  role: 'user' | 'assistant';
+  message: string;
+  created_at: string;
+}
+
+export async function fetchChatHistory(sessionId?: string): Promise<StoredChatMessage[]> {
+  const token = getToken();
+  if (!token) return [];
+
+  const queryParam = sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : '';
+  const res = await fetch(`${API_BASE}/chat/${queryParam}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) return [];
+
+  const json = await res.json().catch(() => ({}));
+  return json.data ?? [];
+}
+
