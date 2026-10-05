@@ -17,6 +17,9 @@ export default function ChatHeader({
       <div className="flex items-center gap-4 text-xs text-muted dark:text-muted-dark text-mist font-mono">
         <span>Cache hit rate: {hitRate}%</span>
         <span>Session tokens: {totalTokens.toLocaleString()}</span>
+        <Link to="/compare" className="hover:text-gold transition-colors">
+          Compare →
+        </Link>
         <Link to="/dashboard" className="hover:text-gold transition-colors">
           Dashboard →
         </Link>

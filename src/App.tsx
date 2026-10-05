@@ -4,6 +4,7 @@ import { LandingPage } from './pages/LandingPage';
 import { ChatPage } from './pages/ChatPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AuthPage } from './pages/AuthPage';
+import { GeminiComparePage } from './pages/GeminiComparePage';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           
           {/* Telemetry Dashboard Route */}
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/compare" element={<GeminiComparePage />} />
           
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

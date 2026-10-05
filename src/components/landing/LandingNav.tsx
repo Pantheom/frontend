@@ -39,6 +39,9 @@ export const LandingNav = () => {
           <Link to="/dashboard" className="hover:text-fog transition-colors hidden sm:inline-block">
             Dashboard
           </Link>
+          <Link to="/compare" className="hover:text-fog transition-colors hidden sm:inline-block">
+            Compare
+          </Link>
           {authed ? (
             <button
               onClick={handleLogout}

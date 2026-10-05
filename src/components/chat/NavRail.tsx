@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Clock, BarChart2, ArrowLeft, LogOut } from 'lucide-react';
+import { Plus, Clock, BarChart2, ArrowLeft, LogOut, GitCompare } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import { logout } from '../../services/authService';
 
@@ -59,6 +59,11 @@ export default function NavRail({
         >
           <BarChart2 className="w-4 h-4" />
           <span>Dashboard</span>
+        </Link>
+
+        <Link to="/compare" className="text-sm text-left py-2 px-2.5 rounded flex items-center gap-2 text-mist hover:text-fog hover:bg-surface/60 border border-transparent transition-colors">
+          <GitCompare className="w-4 h-4" />
+          <span>Compare</span>
         </Link>
       </div>
 

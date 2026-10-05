@@ -42,6 +42,7 @@ export const CacheTag: React.FC<CacheTagProps> = ({
           borderColor: 'border-cache-hit/30',
         };
       case 'LLM_Generation_Miss':
+      default:
         return {
           label: tier ? `MISS • ${tier.split('—')[1]?.trim() || tier}` : 'LLM MISS',
           fullLabel: tier ? `LLM Generation Miss (${tier})` : 'LLM Generation Miss',
