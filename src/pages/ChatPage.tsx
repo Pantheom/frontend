@@ -23,6 +23,7 @@ export function ChatPage() {
   const [totalQueries, setTotalQueries] = useState(0);
   const [totalTokens, setTotalTokens] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [chatTitle, setChatTitle] = useState('New conversation');
 
   // Auth guard and initial history load for current user
@@ -206,18 +207,25 @@ export function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen bg-void text-fog font-body overflow-hidden selection:bg-gold/20 selection:text-gold">
-      {/* Slim 2-Pane Navigation Rail */}
+    <div className="flex h-screen h-[100dvh] bg-void text-fog font-body overflow-hidden selection:bg-gold/20 selection:text-gold">
+      {/* Slim 2-Pane Navigation Rail (Desktop + Mobile Slideout) */}
       <NavRail
         onNewChat={handleNewChat}
         onToggleHistory={handleToggleHistory}
         historyOpen={historyOpen}
+        mobileOpen={mobileNavOpen}
+        onCloseMobile={() => setMobileNavOpen(false)}
       />
 
       {/* Main Conversation Pane */}
       <div className="flex-1 flex flex-col min-w-0 bg-void relative">
         {/* Header with live earned cache stat */}
-        <ChatHeader title={chatTitle} hitRate={hitRate} totalTokens={totalTokens} />
+        <ChatHeader
+          title={chatTitle}
+          hitRate={hitRate}
+          totalTokens={totalTokens}
+          onOpenMobileNav={() => setMobileNavOpen(true)}
+        />
 
         {/* Conversation Thread */}
         <ChatThread
@@ -231,7 +239,14 @@ export function ChatPage() {
 
         {/* History Flyout Drawer */}
         {historyOpen && (
-          <aside className="absolute inset-y-0 left-0 w-72 bg-surface border-r border-line p-4 z-20 flex flex-col shadow-2xl">
+          <>
+            {/* Backdrop for history flyout on small screens */}
+            <div
+              className="fixed inset-0 bg-void/70 backdrop-blur-sm z-20 md:hidden"
+              onClick={() => setHistoryOpen(false)}
+              aria-hidden="true"
+            />
+            <aside className="absolute inset-y-0 left-0 w-72 max-w-[85vw] bg-surface border-r border-line p-4 z-20 flex flex-col shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-line mb-4">
               <span className="text-xs font-mono font-medium uppercase text-mist">
                 Chat History
@@ -289,7 +304,8 @@ export function ChatPage() {
               Clear Current Thread
             </button>
           </aside>
-        )}
+        </>
+      )}
       </div>
     </div>
   );

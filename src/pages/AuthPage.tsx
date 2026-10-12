@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { login, register } from '../services/authService';
 
 type Mode = 'login' | 'register';
@@ -33,16 +34,27 @@ export function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-void flex items-center justify-center p-4 font-body">
+    <div className="min-h-screen min-h-[100dvh] bg-void flex flex-col items-center justify-center p-4 sm:p-6 font-body">
       <div className="w-full max-w-sm">
+        {/* Back Link */}
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs text-mist hover:text-fog transition-colors font-mono"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to home</span>
+          </Link>
+        </div>
+
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold tracking-widest text-fog uppercase">CEREBRUS</h1>
           <p className="text-xs text-mist mt-1 tracking-wide">Intelligent AI Pipeline</p>
         </div>
 
         {/* Card */}
-        <div className="bg-surface border border-line rounded-xl p-8 shadow-2xl">
+        <div className="bg-surface border border-line rounded-xl p-5 sm:p-8 shadow-2xl">
           {/* Tab toggle */}
           <div className="flex rounded-lg overflow-hidden border border-line mb-6">
             {(['login', 'register'] as Mode[]).map((m) => (

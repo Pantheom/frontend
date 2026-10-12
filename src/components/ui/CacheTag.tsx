@@ -58,7 +58,7 @@ export const CacheTag: React.FC<CacheTagProps> = ({
   const IconComponent = details.icon;
 
   return (
-    <div className="inline-flex items-center gap-1.5 font-mono text-xs select-none">
+    <div className="inline-flex items-center gap-1.5 font-mono text-xs select-none flex-wrap">
       {/* Primary Status Tag */}
       <span
         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded border transition-colors ${details.textColor} ${details.bgColor} ${details.borderColor}`}

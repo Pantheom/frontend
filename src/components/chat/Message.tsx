@@ -9,7 +9,7 @@ interface UserMessageProps {
 
 export function UserMessage({ id, text }: UserMessageProps) {
   return (
-    <div id={id} className="self-end max-w-[75%] bg-surface border border-line rounded-lg px-4 py-2.5 text-sm leading-relaxed text-fog">
+    <div id={id} className="self-end max-w-[92%] sm:max-w-[82%] md:max-w-[75%] bg-surface border border-line rounded-lg px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm leading-relaxed text-fog">
       {text}
     </div>
   );
@@ -75,33 +75,33 @@ export function AssistantMessage({
   const isLlmCall = !isHit;
 
   return (
-    <div className="max-w-[75%]">
-      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className={`text-xs px-2 py-0.5 rounded font-mono ${tier.badgeClass}`}>
+    <div className="max-w-[96%] sm:max-w-[85%] md:max-w-[75%]">
+      <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 flex-wrap">
+        <span className={`text-[10px] sm:text-xs px-2 py-0.5 rounded font-mono ${tier.badgeClass}`}>
           {tier.label}
         </span>
-        <span className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
+        <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
           {isLlmCall ? (selectedTier ?? 'Tier pending') : 'No LLM call'}
         </span>
-        <span className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
+        <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist">
           Context needed: {isLlmCall && needsContext === true ? 'true' : 'false'}
         </span>
         {isLlmCall && tokenUsage && tokenUsage.total_tokens !== null && (
           <span
-            className="text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist"
+            className="text-[10px] sm:text-xs px-2 py-0.5 rounded font-mono bg-surface-elevated text-mist"
             title={`Provider: ${tokenUsage.provider ?? '-'} - Model: ${tokenUsage.model ?? '-'}`}
           >
             {'↑'} {tokenUsage.prompt_tokens ?? '?'} {'↓'} {tokenUsage.completion_tokens ?? '?'} {'|'} {tokenUsage.total_tokens} tok
           </span>
         )}
         {latencyMs !== undefined && (
-          <span className="text-xs text-muted dark:text-muted-dark text-mist font-mono">
+          <span className="text-[10px] sm:text-xs text-muted dark:text-muted-dark text-mist font-mono">
             Response: {latencyMs} ms
           </span>
         )}
       </div>
       {isLlmCall && (
-        <div className="mb-2 text-[11px] font-mono text-mist">
+        <div className="mb-2 text-[10px] sm:text-[11px] font-mono text-mist">
           {(() => {
             const m = modelName?.toLowerCase() ?? '';
             if (m.includes('llama') || m.includes('oss') || m.includes('gpt')) return 'gpt oss 20B';
@@ -115,7 +115,7 @@ export function AssistantMessage({
           })()}
         </div>
       )}
-      <div className="assistant-markdown text-sm leading-relaxed text-ink dark:text-ink-dark text-fog">
+      <div className="assistant-markdown text-xs sm:text-sm leading-relaxed text-ink dark:text-ink-dark text-fog">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
         {isStreaming && (
           <span className="inline-block w-1.5 h-3.5 ml-1 bg-gold animate-pulse align-middle" />

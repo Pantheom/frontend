@@ -65,8 +65,8 @@ export const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-void text-fog font-body selection:bg-gold/20 selection:text-gold">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-void/95 border-b border-line px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-30 bg-void/95 border-b border-line px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3 sm:gap-4">
           <Link
             to="/"
             className="inline-flex items-center gap-1.5 text-xs text-mist hover:text-fog transition-colors font-mono"
@@ -76,34 +76,35 @@ export const DashboardPage = () => {
           </Link>
           <div className="h-4 w-px bg-line" />
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-gold" />
-            <span className="font-display text-sm tracking-wider text-fog font-semibold">
-              CERBERUS TELEMETRY
+            <Shield className="w-4 h-4 text-gold shrink-0" />
+            <span className="font-display text-xs sm:text-sm tracking-wider text-fog font-semibold">
+              CERBERUS <span className="hidden xs:inline">TELEMETRY</span>
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-4">
           {uid && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded bg-surface border border-line text-[11px] font-mono text-mist">
+            <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded bg-surface border border-line text-[11px] font-mono text-mist">
               <User className="w-3 h-3 text-gold" />
-              <span className="truncate max-w-[140px]" title={uid}>
+              <span className="truncate max-w-[120px]" title={uid}>
                 {uid.slice(0, 8)}...
               </span>
             </div>
           )}
           <Link
             to="/chat"
-            className="text-xs uppercase tracking-wider font-mono font-medium px-4 py-1.5 rounded bg-gold text-void hover:bg-gold-hover transition-colors"
+            className="text-xs uppercase tracking-wider font-mono font-medium px-3 sm:px-4 py-1.5 rounded bg-gold text-void hover:bg-gold-hover transition-colors whitespace-nowrap"
           >
-            Open Chat Surface →
+            <span className="hidden sm:inline">Open Chat Surface →</span>
+            <span className="sm:hidden">Chat →</span>
           </Link>
           <button
             onClick={() => {
               logout();
               navigate('/login');
             }}
-            className="text-xs font-mono text-mist hover:text-red-400 flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-surface border border-transparent hover:border-line transition-colors"
+            className="text-xs font-mono text-mist hover:text-red-400 flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded hover:bg-surface border border-transparent hover:border-line transition-colors cursor-pointer"
             title="Log out"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -112,20 +113,20 @@ export const DashboardPage = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-8 py-10 space-y-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
         {/* Title & System Status */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4">
           <div>
-            <span className="font-mono text-xs text-gold uppercase tracking-widest block mb-2">
+            <span className="font-mono text-xs text-gold uppercase tracking-widest block mb-1.5">
               User Observability • Full Chat History
             </span>
-            <h1 className="headline font-display text-3xl md:text-4xl text-fog font-semibold">
+            <h1 className="headline font-display text-2xl sm:text-3xl md:text-4xl text-fog font-semibold">
               Pipeline Performance
             </h1>
           </div>
-          <div className="flex items-center gap-3 font-mono text-xs text-mist">
-            <span className="w-2 h-2 rounded-full bg-cache-hit animate-pulse" />
-            <span>
+          <div className="flex items-center gap-2.5 font-mono text-xs text-mist">
+            <span className="w-2 h-2 rounded-full bg-cache-hit animate-pulse shrink-0" />
+            <span className="text-[11px] sm:text-xs">
               {isLoading
                 ? 'Syncing User Telemetry...'
                 : `Active Telemetry (${stats?.totalRequests || 0} Turns Processed)`}
@@ -134,15 +135,15 @@ export const DashboardPage = () => {
         </div>
 
         {/* Bento Grid KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* KPI 1: Cache Hit Rate */}
-          <div className="p-6 rounded-lg border border-line bg-surface/50 space-y-3">
+          <div className="p-4 sm:p-6 rounded-lg border border-line bg-surface/50 space-y-3">
             <div className="flex items-center justify-between text-mist">
               <span className="text-xs font-mono uppercase">Cache Hit Rate</span>
               <Zap className="w-4 h-4 text-cache-hit" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-3xl text-fog font-semibold">
+              <span className="font-display text-2xl sm:text-3xl text-fog font-semibold">
                 {stats ? `${stats.cacheHitRate}%` : '0%'}
               </span>
               <span className="font-mono text-xs text-cache-hit">
@@ -241,17 +242,17 @@ export const DashboardPage = () => {
                   title={`Tier 3 Large: ${stats?.tierDistribution.tier3Pct ?? 0}%`}
                 />
               </div>
-              <div className="flex justify-between text-[11px] font-mono text-mist">
+              <div className="flex flex-wrap sm:flex-nowrap justify-between gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-mist">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-cache-hit" />
+                  <span className="w-2 h-2 rounded-full bg-cache-hit shrink-0" />
                   <span>Tier 1: Small ({stats?.tierDistribution.tier1Pct ?? 0}%)</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-gold" />
-                  <span>Tier 2: Medium ({stats?.tierDistribution.tier2Pct ?? 0}%)</span>
+                  <span className="w-2 h-2 rounded-full bg-gold shrink-0" />
+                  <span>Tier 2: Med ({stats?.tierDistribution.tier2Pct ?? 0}%)</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-cache-miss" />
+                  <span className="w-2 h-2 rounded-full bg-cache-miss shrink-0" />
                   <span>Tier 3: Large ({stats?.tierDistribution.tier3Pct ?? 0}%)</span>
                 </span>
               </div>
@@ -330,33 +331,33 @@ export const DashboardPage = () => {
         </div>
 
         {/* Live Request Stream / Audit Log */}
-        <div className="p-6 rounded-lg border border-line bg-surface/40 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-6 rounded-lg border border-line bg-surface/40 space-y-4 sm:space-y-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <span className="font-mono text-xs text-gold uppercase block">User Request Audit</span>
-              <h3 className="font-display text-xl text-fog font-medium">Historical Query Stream</h3>
+              <h3 className="font-display text-lg sm:text-xl text-fog font-medium">Historical Query Stream</h3>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full lg:w-auto">
+              <div className="relative w-full sm:w-48">
                 <Search className="w-3.5 h-3.5 text-mist absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter prompts..."
-                  className="pl-8 pr-3 py-1.5 rounded bg-surface border border-line text-xs text-fog placeholder:text-mist outline-none font-mono focus:border-gold/40 w-48"
+                  className="pl-8 pr-3 py-1.5 rounded bg-surface border border-line text-xs text-fog placeholder:text-mist outline-none font-mono focus:border-gold/40 w-full"
                 />
               </div>
 
-              <div className="flex items-center gap-1 font-mono text-xs">
-                <Filter className="w-3.5 h-3.5 text-mist mr-1" />
+              <div className="flex flex-wrap items-center gap-1 font-mono text-xs">
+                <Filter className="w-3.5 h-3.5 text-mist mr-1 shrink-0" />
                 {['ALL', 'RAM_Exact_Hit', 'DB_Semantic_Hit', 'LLM_Generation_Miss'].map((src) => (
                   <button
                     key={src}
                     onClick={() => setFilterSource(src)}
-                    className={`px-2 py-1 rounded text-[11px] transition-colors ${
+                    className={`px-2 py-1 rounded text-[11px] transition-colors cursor-pointer ${
                       filterSource === src
                         ? 'bg-gold/15 text-gold border border-gold/40'
                         : 'text-mist hover:text-fog bg-surface border border-line-light'
@@ -373,7 +374,7 @@ export const DashboardPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Log Table */}
             <div className="lg:col-span-2 overflow-x-auto border border-line rounded">
-              <table className="w-full text-left font-mono text-xs">
+              <table className="w-full text-left font-mono text-xs min-w-[480px]">
                 <thead className="bg-surface border-b border-line text-mist">
                   <tr>
                     <th className="p-3">Time</th>
@@ -492,7 +493,7 @@ export const DashboardPage = () => {
         </div>
       </main>
 
-      <footer className="border-t border-line py-8 px-8 max-w-7xl mx-auto flex items-center justify-between text-xs font-mono text-mist mt-12">
+      <footer className="border-t border-line py-6 sm:py-8 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-mist mt-8 sm:mt-12 text-center sm:text-left">
         <span>CERBERUS • Telemetry & Observability Hub</span>
         <div className="flex items-center gap-6">
           <Link to="/" className="hover:text-fog transition-colors">Overview</Link>

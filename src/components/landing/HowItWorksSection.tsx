@@ -21,34 +21,34 @@ export const HowItWorksSection = () => {
   ];
 
   return (
-    <section id="how-it-works" className="w-full py-20 md:py-28">
-      <div className="max-w-[1600px] w-full mx-auto px-6 sm:px-10 lg:px-16">
-        <div className="mb-16">
+    <section id="how-it-works" className="w-full py-12 sm:py-20 md:py-28">
+      <div className="max-w-[1600px] w-full mx-auto px-4 sm:px-10 lg:px-16">
+        <div className="mb-10 sm:mb-16">
           <span className="font-mono text-xs uppercase tracking-widest text-gold mb-3 block">
             Three-Stage Decision Pipeline
           </span>
-          <h2 className="headline font-display text-3xl md:text-5xl text-fog">
+          <h2 className="headline font-display text-2xl sm:text-3xl md:text-5xl text-fog">
             How it works
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-line divide-y md:divide-y-0 md:divide-x divide-line rounded-lg overflow-hidden bg-gradient-to-b from-surface-elevated via-surface/40 to-void/60">
           {stages.map((stage) => (
-            <div key={stage.name} className="p-8 md:p-12 space-y-6 flex flex-col justify-between bg-gradient-to-b from-white/[0.04] via-transparent to-transparent hover:bg-white/[0.02] transition-colors duration-300">
-              <div className="space-y-4">
+            <div key={stage.name} className="p-6 sm:p-8 md:p-12 space-y-5 sm:space-y-6 flex flex-col justify-between bg-gradient-to-b from-white/[0.04] via-transparent to-transparent hover:bg-white/[0.02] transition-colors duration-300">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between font-mono text-xs text-mist">
                   <span>{stage.number}</span>
                   <span className="text-gold/80">{stage.latency}</span>
                 </div>
-                <h3 className="font-display text-2xl text-fog">
+                <h3 className="font-display text-xl sm:text-2xl text-fog">
                   {stage.name}
                 </h3>
-                <p className="font-body text-mist text-sm sm:text-base leading-relaxed">
+                <p className="font-body text-mist text-xs sm:text-sm md:text-base leading-relaxed">
                   {stage.description}
                 </p>
               </div>
               <div className="pt-4 border-t border-line/40">
-                <span className="font-mono text-[11px] text-mist/70 uppercase">
+                <span className="font-mono text-[10px] sm:text-[11px] text-mist/70 uppercase">
                   Zero modification to model weights
                 </span>
               </div>
